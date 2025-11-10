@@ -41,4 +41,9 @@ public class TreatmentsController {
     public void deleteTreatment(@PathVariable String id) {
         treatmentService.deleteTreatmentById(id);
     }
+
+    @GetMapping("/search")
+    public List<Treatments> searchTreatments(@RequestParam String name) {
+        return treatmentService.searchTreatments(name);
+    }
 }
