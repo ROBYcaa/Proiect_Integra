@@ -41,4 +41,9 @@ public class UserDetailController {
     public void deleteUserDetail(@PathVariable String id) {
         userDetailService.deleteUserDetailById(id);
     }
+
+    @GetMapping("/search")
+    public List<UserDetail> searchPatients(@RequestParam String name) {
+        return userDetailService.searchPatients(name);
+    }
 }
