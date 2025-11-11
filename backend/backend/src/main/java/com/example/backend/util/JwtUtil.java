@@ -11,6 +11,8 @@ public class JwtUtil {
     private static final String SECRET_KEY =
             "ThisIsASecretKeyForJWTWithAtLeast256BitsLength!";
 
+    private static final long TOKEN_EXPIRATION_TIME_MS = 1000 * 60 * 60;
+
     public String generateToken(String userId, String role) {
         return Jwts.builder()
                 .setHeaderParam("typ"
