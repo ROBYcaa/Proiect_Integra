@@ -1,6 +1,6 @@
 package com.example.backend.repository;
 
-import com.example.backend.models.UserDetail;
+import com.example.backend.model.UserDetail;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;

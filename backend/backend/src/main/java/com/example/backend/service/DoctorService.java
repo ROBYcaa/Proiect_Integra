@@ -1,6 +1,6 @@
 package com.example.backend.service;
 
-import com.example.backend.models.User;
+import com.example.backend.model.User;
 import com.example.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 

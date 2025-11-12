@@ -1,6 +1,6 @@
 package com.example.backend.controller;
 
-import com.example.backend.models.User;
+import com.example.backend.model.User;
 import com.example.backend.service.DoctorService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
