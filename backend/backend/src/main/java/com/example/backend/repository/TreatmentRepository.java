@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface TreatmentRepository extends MongoRepository<Treatments, String> {
     Optional<Treatments> findByMedicationName(String medicationName);
-    List<Treatments> findByTreatmentNameContainingIgnoreCase(String treatmentName);
+    List<Treatments> findByMedicationNameContainingIgnoreCase(String medicationName);
 
 }

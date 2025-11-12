@@ -10,7 +10,7 @@ public class Treatments {
     private String id;
     private String medicationName;
     private String dosage;
-    private int timesPerDay; // înlocuiește timestamps
+    private int timesPerDay;
 
     public Treatments() {}
 
@@ -20,7 +20,6 @@ public class Treatments {
         this.timesPerDay = timesPerDay;
     }
 
-    // Getteri și setteri
     public String getId() { return id; }
 
     public String getMedicationName() { return medicationName; }

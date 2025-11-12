@@ -39,6 +39,6 @@ public class TreatmentService {
     }
 
     public List<Treatments> searchTreatments(String name) {
-        return treatmentRepository.findByTreatmentNameContainingIgnoreCase(name);
+        return treatmentRepository.findByMedicationNameContainingIgnoreCase(name);
     }
 }
