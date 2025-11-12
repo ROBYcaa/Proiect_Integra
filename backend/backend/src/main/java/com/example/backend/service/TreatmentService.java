@@ -1,6 +1,6 @@
 package com.example.backend.service;
 
-import com.example.backend.models.Treatments;
+import com.example.backend.model.Treatment;
 import com.example.backend.repository.TreatmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,19 +18,19 @@ public class TreatmentService {
         this.treatmentRepository = treatmentRepository;
     }
 
-    public List<Treatments> getAllTreatments() {
+    public List<Treatment> getAllTreatments() {
         return treatmentRepository.findAll();
     }
 
-    public Optional<Treatments> getTreatmentById(String id) {
+    public Optional<Treatment> getTreatmentById(String id) {
         return treatmentRepository.findById(id);
     }
 
-    public Optional<Treatments> getTreatmentByMedicationName(String medicationName) {
+    public Optional<Treatment> getTreatmentByMedicationName(String medicationName) {
         return treatmentRepository.findByMedicationName(medicationName);
     }
 
-    public Treatments createTreatment(Treatments treatment) {
+    public Treatment createTreatment(Treatment treatment) {
         return treatmentRepository.save(treatment);
     }
 
@@ -38,7 +38,7 @@ public class TreatmentService {
         treatmentRepository.deleteById(id);
     }
 
-    public List<Treatments> searchTreatments(String name) {
-        return treatmentRepository.findByTreatmentNameContainingIgnoreCase(name);
+    public List<Treatment> searchTreatments(String name) {
+        return treatmentRepository.findByMedicationNameContainingIgnoreCase(name);
     }
 }

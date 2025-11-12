@@ -1,26 +1,25 @@
-package com.example.backend.models;
+package com.example.backend.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "treatments")
-public class Treatments {
+public class Treatment {
 
     @Id
     private String id;
     private String medicationName;
     private String dosage;
-    private int timesPerDay; // înlocuiește timestamps
+    private int timesPerDay;
 
-    public Treatments() {}
+    public Treatment() {}
 
-    public Treatments(String medicationName, String dosage, int timesPerDay) {
+    public Treatment(String medicationName, String dosage, int timesPerDay) {
         this.medicationName = medicationName;
         this.dosage = dosage;
         this.timesPerDay = timesPerDay;
     }
 
-    // Getteri și setteri
     public String getId() { return id; }
 
     public String getMedicationName() { return medicationName; }

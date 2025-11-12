@@ -1,6 +1,6 @@
 package com.example.backend.controller;
 
-import com.example.backend.models.User;
+import com.example.backend.model.User;
 import com.example.backend.service.UserService;
 import com.example.backend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
