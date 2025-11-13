@@ -2,6 +2,7 @@ package com.example.backend.controller;
 
 import com.example.backend.model.User;
 import com.example.backend.service.UserService;
+import com.example.backend.service.RefreshTokenService;
 import com.example.backend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,9 @@ public class AuthController {
     private UserService userService;
     @Autowired
     private JwtUtil jwtUtil;
+    @Autowired
+    private RefreshTokenService refreshTokenService;
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> loginData) {
         String email = loginData.get("email");
@@ -34,4 +38,18 @@ public class AuthController {
                 "role"
                 , user.getRole()));
     }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshAccessToken(@RequestBody Map<String, String> request) {
+        String refreshToken = request.get("refreshToken");
+        if (refreshTokenService.validateRefreshToken(refreshToken)) {
+            String userId = refreshTokenService.findByToken(refreshToken).get().getUserId();
+            String newAccessToken = jwtUtil.generateToken(userId,
+                    "doctor");
+            return ResponseEntity.ok(Map.of("accessToken"
+                    , newAccessToken));
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token invalid sau expirat.");
+    }
+
 }
