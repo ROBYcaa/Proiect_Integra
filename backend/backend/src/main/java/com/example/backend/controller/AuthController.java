@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import com.example.backend.model.RefreshToken;
 import com.example.backend.model.User;
 import com.example.backend.service.UserService;
 import com.example.backend.service.RefreshTokenService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -28,28 +30,37 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody Map<String, String> loginData) {
         String email = loginData.get("email");
         String password = loginData.get("password");
+
         User user = userService.getUserByEmail(email).orElse(null);
         if (user == null || !user.getPassword().equals(password)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credențiale invalide");
         }
-        String token = jwtUtil.generateToken(user.getId(), user.getRole());
-        return ResponseEntity.ok(Map.of("token"
-                , token,
-                "role"
-                , user.getRole()));
+
+        String accessToken = jwtUtil.generateToken(user.getId(), user.getRole());
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
+
+        return ResponseEntity.ok(Map.of(
+                "accessToken", accessToken,
+                "refreshToken", refreshToken.getToken(),
+                "role", user.getRole()
+        ));
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshAccessToken(@RequestBody Map<String, String> request) {
-        String refreshToken = request.get("refreshToken");
-        if (refreshTokenService.validateRefreshToken(refreshToken)) {
-            String userId = refreshTokenService.findByToken(refreshToken).get().getUserId();
-            String newAccessToken = jwtUtil.generateToken(userId,
-                    "doctor");
-            return ResponseEntity.ok(Map.of("accessToken"
-                    , newAccessToken));
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token invalid sau expirat.");
-    }
+        String oldRefreshToken = request.get("refreshToken");
 
+        Optional<RefreshToken> existingToken = refreshTokenService.findByToken(oldRefreshToken);
+        if (existingToken.isEmpty() || !refreshTokenService.validateRefreshToken(oldRefreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token invalid sau expirat.");
+        }
+        String userId = existingToken.get().getUserId();
+        refreshTokenService.deleteByToken(oldRefreshToken);
+        String newAccessToken = jwtUtil.generateToken(userId, "doctor");
+        RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(userId);
+        return ResponseEntity.ok(Map.of(
+                "accessToken", newAccessToken,
+                "refreshToken", newRefreshToken.getToken()
+        ));
+    }
 }
