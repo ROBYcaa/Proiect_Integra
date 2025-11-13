@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import com.example.backend.model.RefreshToken;
 import com.example.backend.model.User;
 import com.example.backend.service.UserService;
 import com.example.backend.service.RefreshTokenService;
@@ -28,11 +29,15 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody Map<String, String> loginData) {
         String email = loginData.get("email");
         String password = loginData.get("password");
+
         User user = userService.getUserByEmail(email).orElse(null);
         if (user == null || !user.getPassword().equals(password)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credențiale invalide");
         }
+
         String token = jwtUtil.generateToken(user.getId(), user.getRole());
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
+
         return ResponseEntity.ok(Map.of("token"
                 , token,
                 "role"
