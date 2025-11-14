@@ -48,4 +48,25 @@ public class DoctorController {
         Treatment savedTreatment = treatmentService.createTreatment(treatment);
         return ResponseEntity.ok(savedTreatment);
     }
+
+    @PutMapping("/treatments/{id}")
+    public ResponseEntity<?> updateTreatment(@PathVariable String id,
+                                             @RequestBody Treatment updatedData,
+                                             HttpServletRequest request) {
+
+        String role = (String) request.getAttribute("role");
+
+        if (role == null || !"doctor".equalsIgnoreCase(role)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Acces interzis: doar doctorii pot modifica tratamente.");
+        }
+
+        Treatment updated = treatmentService.updateTreatment(id, updatedData);
+        if (updated == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Tratamentul nu a fost găsit.");
+        }
+
+        return ResponseEntity.ok(updated);
+    }
 }
