@@ -41,4 +41,22 @@ public class TreatmentService {
     public List<Treatment> searchTreatments(String name) {
         return treatmentRepository.findByMedicationNameContainingIgnoreCase(name);
     }
+
+    public Treatment updateTreatment(String id, Treatment newData) {
+        Optional<Treatment> existingOpt = treatmentRepository.findById(id);
+
+        if (existingOpt.isEmpty()) {
+            return null;
+        }
+
+        Treatment existing = existingOpt.get();
+
+        existing.setMedicationName(newData.getMedicationName());
+        existing.setDosage(newData.getDosage());
+        existing.setTimesPerDay(newData.getTimesPerDay());
+
+        return treatmentRepository.save(existing);
+    }
+
+
 }
