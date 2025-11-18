@@ -8,10 +8,7 @@ import com.example.backend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.Optional;
@@ -26,6 +23,7 @@ public class AuthController {
     @Autowired
     private RefreshTokenService refreshTokenService;
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> loginData) {
         String email = loginData.get("email");
@@ -63,4 +61,34 @@ public class AuthController {
                 "refreshToken", newRefreshToken.getToken()
         ));
     }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody Map<String, String> registerData) {
+        String email = registerData.get("email");
+        String password = registerData.get("password");
+        String name = registerData.get("name");
+
+        if (userService.getUserByEmail(email).isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Email deja folosit");
+        }
+
+        User newUser = new User();
+        newUser.setEmail(email);
+        newUser.setPassword(password);
+        newUser.setRole("patient");
+
+        User savedUser = userService.createUser(newUser);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(Map.of(
+                        "message", "Pacient înregistrat cu succes",
+                        "userId", savedUser.getId(),
+                        "email", savedUser.getEmail(),
+                        "role", savedUser.getRole()
+                ));
+    }
+
+
+
 }

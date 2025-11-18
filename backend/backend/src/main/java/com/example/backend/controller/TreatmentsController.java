@@ -1,11 +1,18 @@
 package com.example.backend.controller;
 
 import com.example.backend.model.Treatment;
+import com.example.backend.model.User;
 import com.example.backend.service.TreatmentService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import com.example.backend.repository.UserRepository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/treatments")
@@ -46,4 +53,5 @@ public class TreatmentsController {
     public List<Treatment> searchTreatments(@RequestParam String name) {
         return treatmentService.searchTreatments(name);
     }
+
 }
