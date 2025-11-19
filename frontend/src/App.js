@@ -1,8 +1,10 @@
+import './App.css';
+import Login from './login';
 import Dashboard from "./Dashboard";
 
 function App() {
   return (
-      <div className="App">
+      <div>
         <Dashboard />
       </div>
   );
