@@ -1,10 +1,11 @@
-import Login from "./Login";
-
+import './App.css';
+import Login from './login';
+import Dashboard from "./Dashboard";
 
 function App() {
   return (
       <div>
-        <Login />
+        <Dashboard />
       </div>
   );
 }
