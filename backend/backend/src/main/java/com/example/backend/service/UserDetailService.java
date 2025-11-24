@@ -41,4 +41,9 @@ public class UserDetailService {
     public List <UserDetail> searchPatients(String name) {
         return userDetailRepository.findByFirstNameContainingOrLastNameContaining(name, name);
     }
+
+    public Optional<UserDetail> getByUserId(String userId) {
+        return userDetailRepository.findByUserId(userId);
+    }
+
 }
