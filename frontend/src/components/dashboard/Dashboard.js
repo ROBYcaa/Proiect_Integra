@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState  } from "react";
 import { getPatients } from "../../api/api";
 import "./Dashboard.css";
+import { useNavigate } from "react-router-dom";
 
-function PatientDetails({ patient }) {
+function PatientDetails({ patient, handlePrescribe  }) {
+
     return (
         <div className="patient-details">
             <h3>{patient.lastName} {patient.firstName}</h3>
@@ -13,7 +15,7 @@ function PatientDetails({ patient }) {
             <p>Extra info: {patient.extrainfo}</p>
             <button
                 className="treatment-button"
-                onClick={() => console.log(`Vezi tratamente pentru ${patient.id}`)}
+                onClick={() => handlePrescribe(patient.id)}
             >
                 Vezi tratamente
             </button>
@@ -27,6 +29,12 @@ function Dashboard() {
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const navigate = useNavigate();
+
+    const handlePrescribe = (id) => {
+        navigate(`/prescribe/${id}`);
+    };
+
 
     useEffect(() => {
         const fetchPatients = async () => {
@@ -89,7 +97,7 @@ function Dashboard() {
             <ul className="patient-list">
                 {filteredPatients.map(p => (
                     <li key={p.id} className={`patient-item`}>
-                        <PatientDetails patient={p} />
+                        <PatientDetails patient={p} handlePrescribe={handlePrescribe} />
                     </li>
 
                 ))}
