@@ -5,7 +5,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { Link, useNavigate } from "react-router-dom";
-import "../App.css"; // importăm fișierul CSS
+import "../App.css";
 export default function NavBar({ user, onLogout }) {
     const navigate = useNavigate();
     const handleLogout = () => {

@@ -25,4 +25,8 @@ export const getPatients = async () => {
         const { data } = await axiosInstance.get(`/doctor/patients/${userId}/details`);
         return data;
     };
+export async function addTreatment(treatment) {
+    const response = await axios.post("http://localhost:8080/api/treatments", treatment);
+    return response.data;
+}
 

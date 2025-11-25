@@ -20,7 +20,6 @@ function App() {
                 <Route path="/login" element={<Login setUser={setUser}/>} />
                 <Route path="/dashboard" element={<Dashboard/>} />
                 <Route path="/prescribe" element={<PrescriptionForm />} />
-                <Route path="/prescribe/:id" element={<PrescriptionForm />} />
 
             </Routes>
         </BrowserRouter>

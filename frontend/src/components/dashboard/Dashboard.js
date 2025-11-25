@@ -32,7 +32,7 @@ function Dashboard() {
     const navigate = useNavigate();
 
     const handlePrescribe = (id) => {
-        navigate(`/prescribe/${id}`);
+        navigate(`/prescribe?patientId=${id}`);
     };
 
 
