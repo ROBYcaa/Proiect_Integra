@@ -51,25 +51,15 @@ function PrescriptionForm() {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async(e) => {
         e.preventDefault();
-
+        console.log("Prescription submitted:", form);
         try {
-            const payload = {
-                doctorId: form.doctorID,
-                patientId: form.patientID,
-                medicationName: form.medication,
-                dosage: form.dosage,
-                timesPerDay: form.frequency,
-                notes: form.notes
-            };
-
-            const saved = await addTreatment(payload);
-
-            alert("Treatment saved!");
-
+            const body = { ...form, frequency: Number(form.frequency) };
+            const result = await addTreatment(body);
+            console.log("Treatment added:", result);
         } catch (err) {
-            alert("Error: " + err.message);
+            console.error(err);
         }
     };
 
