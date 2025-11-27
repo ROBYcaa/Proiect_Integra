@@ -2,6 +2,7 @@ import React, { useEffect, useState  } from "react";
 import { getPatients } from "../../api/api";
 import "./Dashboard.css";
 import { useNavigate } from "react-router-dom";
+import { getTreatments } from "../../api/api";
 
 function PatientDetails({ patient, handlePrescribe  }) {
 
@@ -30,11 +31,28 @@ function Dashboard() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const navigate = useNavigate();
+    const [numberOfTreatments, setNumberOfTreatments] = useState(0);
+    const doctorId = localStorage.getItem("currentUserId");
+
 
     const handlePrescribe = (id) => {
         navigate(`/prescribe?patientId=${id}`);
     };
 
+    useEffect(() => {
+        const fetchTreatments = async () => {
+            try {
+                const data = await getTreatments(doctorId);
+                setNumberOfTreatments(data.length);
+                console.log(data.length)
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchTreatments();
+    }, []);
 
     useEffect(() => {
         const fetchPatients = async () => {
@@ -55,6 +73,10 @@ function Dashboard() {
         p.lastName.toLowerCase().includes(search.toLowerCase())
     );
 
+    const today = new Date();
+
+    const activeTreatments = numberOfTreatments;
+
     if (loading) return <p>Se încarcă pacienții...</p>;
     if (error) return <p style={{ color: "red" }}>{error}</p>;
 
@@ -73,12 +95,12 @@ function Dashboard() {
 
                     <div className="stat-box">
                         <h3>Active Treatments</h3>
-                        <p>0</p> {/* mock data */}
+                        <p>{activeTreatments}</p>
                     </div>
 
                     <div className="stat-box">
                         <h3>Average Progress</h3>
-                        <p>0%</p> {/* mock data */}
+                        <p>0%</p>
                     </div>
                 </div>
 

@@ -8,6 +8,12 @@ export default function Treatments() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
+    const formatDate = (isoString) => {
+        if (!isoString) return "—";
+        const date = new Date(isoString);
+        return date.toLocaleDateString("ro-RO");
+    };
+
     useEffect(() => {
         const fetchTreatments = async () => {
             try {
@@ -48,6 +54,14 @@ export default function Treatments() {
                             </Typography>
 
                             <Typography>
+                                <strong>Start Date:</strong> {formatDate(t.startDate)}
+                            </Typography>
+
+                            <Typography>
+                                <strong>End Date:</strong> {formatDate(t.endDate)}
+                            </Typography>
+
+                            <Typography>
                                 <strong>Notes:</strong> {t.notes ?? "None"}
                             </Typography>
                         </CardContent>
@@ -56,4 +70,4 @@ export default function Treatments() {
             </div>
         </div>
     );
-}
+};
