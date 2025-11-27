@@ -25,11 +25,14 @@ function Login({setUser}) {
 
             const data = await response.json();
             const token = data.accessToken;
+            const currentUserId = data.userId;
+            console.log(currentUserId+"eroareeeeee")
             setUser({
                 loggedIn: data != null,
                 role: data.role
             });
             localStorage.setItem("token", token);
+            localStorage.setItem("currentUserId", currentUserId);
 
             navigate("/dashboard");
         } catch (err) {
