@@ -6,6 +6,8 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { Link, useNavigate } from "react-router-dom";
 import "../App.css";
+
+
 export default function NavBar({ user, onLogout }) {
     const navigate = useNavigate();
     const handleLogout = () => {
@@ -30,11 +32,12 @@ export default function NavBar({ user, onLogout }) {
                         </Button>
                     )}
 
-                    {user?.loggedIn && user.role === "patient" && (
+                    {user?.loggedIn && (
                         <Button color="inherit" component={Link} to="/treatments">
                             Treatments
                         </Button>
                     )}
+
                 </Box>
                 <Box className="navbar-auth">
                     {!user?.loggedIn ? (

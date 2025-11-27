@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface TreatmentRepository extends MongoRepository<Treatment, String> {
     Optional<Treatment> findByMedicationName(String medicationName);
     List<Treatment> findByMedicationNameContainingIgnoreCase(String medicationName);
-
+    List<Treatment> findByDoctorId(String doctorID);
 }

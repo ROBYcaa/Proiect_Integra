@@ -40,7 +40,8 @@ public class AuthController {
         return ResponseEntity.ok(Map.of(
                 "accessToken", accessToken,
                 "refreshToken", refreshToken.getToken(),
-                "role", user.getRole()
+                "role", user.getRole(),
+                "userId",user.getId()
         ));
     }
 

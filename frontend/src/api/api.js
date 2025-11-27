@@ -25,8 +25,17 @@ export const getPatients = async () => {
         const { data } = await axiosInstance.get(`/doctor/patients/${userId}/details`);
         return data;
     };
-export async function addTreatment(treatment) {
-    const response = await axios.post("http://localhost:8080/api/treatments", treatment);
-    return response.data;
-}
+export const postTreatment = async (postTreatmentBody) => {
+    try {
+        const response = await axiosInstance.post("/treatments/addTreatment", postTreatmentBody);
+        return response.data;
+    } catch (error) {
+        console.error("Error posting treatment:", error);
+        throw error; // re-throw so the caller can handle it
+    }
+};
 
+export const getTreatments = async (doctorId) => {
+    const response = await axiosInstance.get(`/treatments/doctor/${doctorId}`);
+    return response.data;
+};

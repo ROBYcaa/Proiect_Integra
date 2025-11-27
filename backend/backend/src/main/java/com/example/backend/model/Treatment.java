@@ -11,13 +11,19 @@ public class Treatment {
     private String medicationName;
     private String dosage;
     private int timesPerDay;
+    private String doctorId;
+    private String patientId;
+    private String notes;
 
     public Treatment() {}
 
-    public Treatment(String medicationName, String dosage, int timesPerDay) {
+    public Treatment(String medicationName, String dosage, int timesPerDay, String doctorId, String patientId, String notes) {
         this.medicationName = medicationName;
         this.dosage = dosage;
         this.timesPerDay = timesPerDay;
+        this.doctorId = doctorId;
+        this.patientId = patientId;
+        this.notes = notes;
     }
 
     public String getId() { return id; }
@@ -30,4 +36,14 @@ public class Treatment {
 
     public int getTimesPerDay() { return timesPerDay; }
     public void setTimesPerDay(int timesPerDay) { this.timesPerDay = timesPerDay; }
+
+    public String getDoctorId() { return doctorId; }
+    public void setDoctorId(String doctorId) { this.doctorId = doctorId; }
+
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
+
+    public String getPatientID() { return patientId; }
+    public void setPatientID(String patientID) { this.patientId = patientId; }
+
 }

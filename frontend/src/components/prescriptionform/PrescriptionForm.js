@@ -1,51 +1,57 @@
-import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { getPatients } from "../../api/api";
-import { FormControl, InputLabel, Select, MenuItem, TextField, Button } from "@mui/material";
-import "./PrescriptionForm.css";
-import { addTreatment } from "../../api/api";
+import React, { useEffect, useState } from 'react';
+import { getPatients,postTreatment } from "../../api/api";
+import {
+    TextField,
+    Button,
+    MenuItem,
+    Select,
+    FormControl,
+    InputLabel,
+    TextareaAutosize
+} from '@mui/material';
+import { useLocation } from 'react-router-dom';
+import './PrescriptionForm.css';
 
-
-function PrescriptionForm() {
-    const location = useLocation();
-    const query = new URLSearchParams(location.search);
-    const patientIdFromUrl = query.get("patientId");
+export default function PrescriptionForm() {
+    const query = new URLSearchParams(useLocation().search);
+    const preselectedPatientId = query.get('patientId');
+    const currentUserId = localStorage.getItem("currentUserId");
 
     const [patients, setPatients] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
-
     const [form, setForm] = useState({
-        doctorID: localStorage.getItem("email") || "",
-        patientID: "",
-        medication: "",
-        dosage: "",
-        frequency: "",
-        notes: "",
+        doctorId: '',
+        patientId: '',
+        medicationName: '',
+        dosage: '',
+        timesPerDay: '',
+        notes: ''
     });
 
-    useEffect(() => {
-        if (patientIdFromUrl) {
-            setForm(prev => ({
-                ...prev,
-                patientID: patientIdFromUrl
-            }));
-        }
-    }, [patientIdFromUrl]);
-
+    // Fetch patient list from backend
     useEffect(() => {
         const fetchPatients = async () => {
             try {
                 const data = await getPatients();
                 setPatients(data);
             } catch (err) {
-                setError(err.message);
+//            setError(err.message);
             } finally {
-                setLoading(false);
+//            setLoading(false);
             }
         };
         fetchPatients();
     }, []);
+
+    useEffect(() => {
+        console.log(preselectedPatientId);
+        if (preselectedPatientId) {
+            setForm(prev => ({ ...prev, patientId: preselectedPatientId }));
+        }
+    }, [preselectedPatientId]);
+
+    useEffect(() => {
+        setForm(prev => ({ ...prev, doctorId: currentUserId }));
+    }, [currentUserId])
 
     const handleChange = e => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -56,50 +62,102 @@ function PrescriptionForm() {
         console.log("Prescription submitted:", form);
         try {
             const body = { ...form, frequency: Number(form.frequency) };
-            const result = await addTreatment(body);
+            const result = await postTreatment(body);
             console.log("Treatment added:", result);
         } catch (err) {
             console.error(err);
         }
     };
 
-
-    if (loading) return <p>Se încarcă pacienții...</p>;
-    if (error) return <p style={{ color: "red" }}>{error}</p>;
-
     return (
-        <div className="prescription_form">
-            <h1>Introduce Prescription</h1>
+        <form className="treatment-form" onSubmit={handleSubmit}>
+            <h2>Introduce Prescription</h2>
 
-            <form onSubmit={handleSubmit} className="prescription-details" style={{ display: "flex", flexDirection: "column", gap: "16px", maxWidth: "400px" }}>
-                <FormControl fullWidth required>
-                    <InputLabel id="patient-label">Patient</InputLabel>
-                    <Select
-                        labelId="patient-label"
-                        name="patientID"
-                        value={form.patientID}
-                        label="Patient"
-                        onChange={handleChange}
-                    >
-                        {patients.map((p) => (
-                            <MenuItem key={p.id} value={p.id}>
-                                {p.lastName} {p.firstName}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
+            {/* Patient select */}
+            <FormControl fullWidth margin="normal">
+                <InputLabel id="patient-label">Select Patient</InputLabel>
+                <Select
+                    labelId="patient-label"
+                    name="patientId"
+                    value={form.patientId}
+                    onChange={handleChange}
+                    label="Select Patient"
+                >
+                    {patients.map(p => (
+                        <MenuItem key={p.id} value={p.id}>
+                            {p.firstName} {p.lastName}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
 
-                <TextField label="Medication" name="medication" value={form.medication} onChange={handleChange} required fullWidth />
-                <TextField label="Dosage" name="dosage" value={form.dosage} onChange={handleChange} required fullWidth />
-                <TextField label="Frequency (per day)" name="frequency" type="number" value={form.frequency} onChange={handleChange} required fullWidth inputProps={{ min: 1, max: 5 }} />
-                <TextField label="Notes" name="notes" value={form.notes} onChange={handleChange} multiline rows={4} fullWidth />
+            <TextField
+                name="medicationName"
+                label="Treatment Name"
+                variant="outlined"
+                margin="normal"
+                value={form.medicationName}
+                onChange={handleChange}
+            />
 
-                <Button variant="contained" color="primary" type="submit">
-                    Submit Prescription
-                </Button>
-            </form>
-        </div>
+            {/* Dosage */}
+            <TextField
+                label="Dosage"
+                name="dosage"
+                value={form.dosage}
+                onChange={handleChange}
+                fullWidth
+                margin="normal"
+                required
+            />
+
+            {/* Frequency */}
+            <TextField
+                label="Frequency (per day)"
+                name="timesPerDay"
+                type="number"
+                value={form.timesPerDay}
+                onChange={handleChange}
+                fullWidth
+                margin="normal"
+                inputProps={{ min: 1, max: 3 }} // restrict value between 1 and 3
+                required
+            />
+
+            {/*   Start Date
+//      <TextField
+//        label="Start Date"
+//        type="date"
+//        name="startDate"
+//        value={form.startDate}
+//        onChange={handleChange}
+//        fullWidth
+//        margin="normal"
+//        InputLabelProps={{ shrink: true }}
+//      />
+*/}
+            {/* Notes */}
+            <FormControl fullWidth margin="normal">
+                <TextareaAutosize
+                    minRows={3}
+                    placeholder="Notes"
+                    name="notes"
+                    value={form.notes}
+                    onChange={handleChange}
+                    style={{ padding: '10px', borderRadius: '8px', borderColor: '#ccc' }}
+                />
+            </FormControl>
+
+            {/* Submit button */}
+            <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+                fullWidth
+                sx={{ mt: 2 }}
+            >
+                Save
+            </Button>
+        </form>
     );
 }
-
-export default PrescriptionForm;

@@ -39,9 +39,9 @@ public class TreatmentsController {
         return treatmentService.getTreatmentByMedicationName(medicationName);
     }
 
-    @PostMapping
-    public Treatment addTreatment(@RequestBody Treatment treatment) {
-        return treatmentService.createTreatment(treatment);
+    @PostMapping("/addTreatment")
+    public Treatment addTreatment(@RequestBody Treatment t) {
+        return treatmentService.createTreatment(t);
     }
 
      @DeleteMapping("/{id}")
@@ -53,5 +53,11 @@ public class TreatmentsController {
     public List<Treatment> searchTreatments(@RequestParam String name) {
         return treatmentService.searchTreatments(name);
     }
+
+    @GetMapping("/doctor/{doctorId}")
+    public List<Treatment> getTreatmentsByDoctor(@PathVariable String doctorId) {
+        return treatmentService.getTreatmentsByDoctor(doctorId);
+    }
+
 
 }

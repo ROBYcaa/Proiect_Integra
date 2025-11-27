@@ -58,5 +58,10 @@ public class TreatmentService {
         return treatmentRepository.save(existing);
     }
 
+    public List<Treatment> getTreatmentsByDoctor(String doctorId) {
+        return treatmentRepository.findByDoctorId(doctorId);
+    }
+
+
 
 }
