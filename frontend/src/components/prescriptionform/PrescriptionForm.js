@@ -11,11 +11,17 @@ import {
 } from '@mui/material';
 import { useLocation } from 'react-router-dom';
 import './PrescriptionForm.css';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { ro } from 'date-fns/locale';
 
 export default function PrescriptionForm() {
     const query = new URLSearchParams(useLocation().search);
     const preselectedPatientId = query.get('patientId');
     const currentUserId = localStorage.getItem("currentUserId");
+    const [successMessage, setSuccessMessage] = useState("");
+
 
     const [patients, setPatients] = useState([]);
     const [form, setForm] = useState({
@@ -24,7 +30,9 @@ export default function PrescriptionForm() {
         medicationName: '',
         dosage: '',
         timesPerDay: '',
-        notes: ''
+        notes: '',
+        startDate:'',
+        endDate:''
     });
 
     // Fetch patient list from backend
@@ -64,6 +72,21 @@ export default function PrescriptionForm() {
             const body = { ...form, frequency: Number(form.frequency) };
             const result = await postTreatment(body);
             console.log("Treatment added:", result);
+
+            setSuccessMessage("Prescription saved successfully");
+
+            setForm({
+                doctorId: currentUserId,
+                patientId: preselectedPatientId || "",
+                medicationName: "",
+                dosage: "",
+                timesPerDay: "",
+                notes: "",
+                startDate: "",
+                endDate: ""
+            });
+
+            setTimeout(() => setSuccessMessage(""), 3000);
         } catch (err) {
             console.error(err);
         }
@@ -120,22 +143,42 @@ export default function PrescriptionForm() {
                 onChange={handleChange}
                 fullWidth
                 margin="normal"
-                inputProps={{ min: 1, max: 3 }} // restrict value between 1 and 3
+                inputProps={{ min: 1, max: 3 }}
                 required
             />
 
-            {/*   Start Date
-//      <TextField
-//        label="Start Date"
-//        type="date"
-//        name="startDate"
-//        value={form.startDate}
-//        onChange={handleChange}
-//        fullWidth
-//        margin="normal"
-//        InputLabelProps={{ shrink: true }}
-//      />
-*/}
+            {/* Start / End Dates */}
+            <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ro}>
+                <FormControl fullWidth margin="normal">
+                    <DatePicker
+                        label="Start Date"
+                        value={form.startDate ? new Date(form.startDate) : null}
+                        onChange={(value) => {
+                            setForm(prev => ({
+                                ...prev,
+                                startDate: value ? value.toISOString() : ""
+                            }));
+                        }}
+                        format="dd/MM/yyyy"
+                    />
+                </FormControl>
+
+                <FormControl fullWidth margin="normal">
+                    <DatePicker
+                        label="End Date"
+                        value={form.endDate ? new Date(form.endDate) : null}
+                        minDate={form.startDate ? new Date(form.startDate) : null}
+                        onChange={(value) => {
+                            setForm(prev => ({
+                                ...prev,
+                                endDate: value ? value.toISOString() : ""
+                            }));
+                        }}
+                        format="dd/MM/yyyy"
+                    />
+                </FormControl>
+            </LocalizationProvider>
+
             {/* Notes */}
             <FormControl fullWidth margin="normal">
                 <TextareaAutosize
