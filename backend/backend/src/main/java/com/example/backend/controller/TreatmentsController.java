@@ -1,7 +1,9 @@
 package com.example.backend.controller;
 
+import com.example.backend.dto.TreatmentDTO;
 import com.example.backend.model.Treatment;
 import com.example.backend.model.User;
+import com.example.backend.repository.UserDetailRepository;
 import com.example.backend.service.TreatmentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -19,9 +21,11 @@ import java.util.stream.Collectors;
 public class TreatmentsController {
 
     private final TreatmentService treatmentService;
+    private final UserDetailRepository userDetailRepository;
 
-    public TreatmentsController(TreatmentService treatmentService) {
+    public TreatmentsController(TreatmentService treatmentService, UserDetailRepository userDetailRepository) {
         this.treatmentService = treatmentService;
+        this.userDetailRepository = userDetailRepository;
     }
 
     @GetMapping
@@ -55,9 +59,10 @@ public class TreatmentsController {
     }
 
     @GetMapping("/doctor/{doctorId}")
-    public List<Treatment> getTreatmentsByDoctor(@PathVariable String doctorId) {
-        return treatmentService.getTreatmentsByDoctor(doctorId);
+    public List<TreatmentDTO> getTreatmentsByDoctor(@PathVariable String doctorId) {
+        List<Treatment> treatments = treatmentService.getTreatmentsByDoctor(doctorId);
+        return treatments.stream()
+                .map(treatment -> new TreatmentDTO(treatment, userDetailRepository))
+                .collect(Collectors.toList());
     }
-
-
 }

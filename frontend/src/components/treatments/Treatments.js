@@ -46,6 +46,10 @@ export default function Treatments() {
                             </Typography>
 
                             <Typography>
+                                <strong>Patient:</strong> {t.patientFirstName} {t.patientLastName}
+                            </Typography>
+
+                            <Typography>
                                 <strong>Dosage:</strong> {t.dosage}
                             </Typography>
 
