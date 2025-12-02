@@ -34,7 +34,7 @@ public class TreatmentService {
         return treatmentRepository.save(treatment);
     }
 
-    public void deleteTreatmentById(String id) {
+    public void deleteTreatment(String id) {
         treatmentRepository.deleteById(id);
     }
 
@@ -54,6 +54,9 @@ public class TreatmentService {
         existing.setMedicationName(newData.getMedicationName());
         existing.setDosage(newData.getDosage());
         existing.setTimesPerDay(newData.getTimesPerDay());
+        existing.setStartDate(newData.getStartDate());
+        existing.setEndDate(newData.getEndDate());
+        existing.setNotes(newData.getNotes());
 
         return treatmentRepository.save(existing);
     }
@@ -61,7 +64,4 @@ public class TreatmentService {
     public List<Treatment> getTreatmentsByDoctor(String doctorId) {
         return treatmentRepository.findByDoctorId(doctorId);
     }
-
-
-
 }

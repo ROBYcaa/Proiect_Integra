@@ -48,10 +48,12 @@ public class TreatmentsController {
         return treatmentService.createTreatment(t);
     }
 
-     @DeleteMapping("/{id}")
-    public void deleteTreatment(@PathVariable String id) {
-        treatmentService.deleteTreatmentById(id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTreatment(@PathVariable String id) {
+        treatmentService.deleteTreatment(id);
+        return ResponseEntity.noContent().build();
     }
+
 
     @GetMapping("/search")
     public List<Treatment> searchTreatments(@RequestParam String name) {
@@ -64,5 +66,10 @@ public class TreatmentsController {
         return treatments.stream()
                 .map(treatment -> new TreatmentDTO(treatment, userDetailRepository))
                 .collect(Collectors.toList());
+    }
+
+    @PutMapping("/{id}")
+    public Treatment updateTreatment(@PathVariable String id,@RequestBody Treatment updatedTreatment) {
+        return treatmentService.updateTreatment(id, updatedTreatment);
     }
 }
