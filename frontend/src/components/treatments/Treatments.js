@@ -23,6 +23,11 @@ export default function Treatments() {
     const [error, setError] = useState("");
     const [editOpen, setEditOpen] = useState(false);
     const [selectedTreatment, setSelectedTreatment] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filterStatus, setFilterStatus] = useState("All")
+
+    const [filteredTreatments, setFilteredTreatments] = useState([]);
+
 
     const formatDate = (isoString) => {
         if (!isoString) return "—";
@@ -53,12 +58,18 @@ export default function Treatments() {
         } catch (error) {
             console.error("Error updating treatment:"
                 , error);
+
         }
     };
+
+    const handleSearchChange = (e) => setSearchTerm(e.target.value);
+    const handleFilterChange = (e) => setFilterStatus(e.target.value);
+
     const fetchTreatments = async () => {
         try {
             const data = await getTreatments(doctorId);
             setTreatments(data);
+            setFilteredTreatments(data);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -68,21 +79,87 @@ export default function Treatments() {
 
 
     useEffect(() => {
-
         fetchTreatments();
-    }, []);
+    }, [])
+
+    const applyFilters = () => {
+        let result = [...treatments];
+
+        if (searchTerm.trim() !== "") {
+            const term = searchTerm.toLowerCase();
+
+            result = result.filter((t) =>
+                (t.medicationName || "").toLowerCase().includes(term) ||
+                (`${t.patientFirstName || ""} ${t.patientLastName || ""}`).toLowerCase().includes(term)
+            );
+        }
+
+        const today = new Date();
+
+        if (filterStatus === "Active") {
+            result = result.filter(
+                (t) => t.endDate && new Date(t.endDate) > today
+            );
+        }
+
+        if (filterStatus === "Ended") {
+            result = result.filter(
+                (t) => t.endDate && new Date(t.endDate) < today
+            );
+        }
+
+        if (filterStatus === "NoEndDate") {
+            result = result.filter(
+                (t) => !t.endDate || t.endDate === "" || t.endDate === null
+            );
+        }
+
+        setFilteredTreatments(result);
+    };
+
+
+    useEffect(() => {
+        applyFilters();
+    }, [searchTerm, filterStatus, treatments]);
 
     return (
-        <div style={{ padding: "20px" }}>
+        <div style={{padding: "20px"}}>
             <Typography variant="h4" gutterBottom>
                 My Treatments
             </Typography>
 
-            <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-                {treatments.map(t => (
+            <input
+                type=
+                    "text"
+                placeholder=
+                    "Search treatments or patients..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                style={{
+                    width: "300px",
+                    padding: "8px",
+                    marginRight: "20px",
+                    marginBottom: "20px"
+                }}
+            />
+
+            <select
+                value={filterStatus}
+                onChange={handleFilterChange}
+                style={{ padding: "8px", marginBottom: "20px" }}
+
+            >
+                <option value="All">All</option>
+                <option value="Active">Active</option>
+                <option value="Ended">Ended</option>
+                <option value="NoEndDate">Without End Date</option>
+            </select>
+
+            <div style={{display: "flex", gap: "20px", flexWrap: "wrap"}}>
+                {filteredTreatments.map(t => (
                     <Card
                         key={t.id}
-                        sx={{ width: 250, boxShadow: 3 }}
+                        sx={{width: 250, boxShadow: 3}}
                     >
                         <CardContent>
                             <Typography variant="h6">
@@ -116,7 +193,7 @@ export default function Treatments() {
                                 variant="outlined"
                                 size="small"
                                 onClick={() => handleEdit(t)}
-                                sx={{ mt: 1 }}
+                                sx={{mt: 1}}
                             >
                                 Edit
                             </Button>
@@ -126,7 +203,7 @@ export default function Treatments() {
                                 color="error"
                                 size="small"
                                 onClick={() => handleDelete(t.id)}
-                                sx={{ mt: 1 }}
+                                sx={{mt: 1}}
                             >
                                 Delete
                             </Button>
@@ -137,13 +214,13 @@ export default function Treatments() {
             </div>
             <Dialog open={editOpen} onClose={() => setEditOpen(false)}>
                 <DialogTitle>Edit Treatment</DialogTitle>
-                <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <DialogContent sx={{display: "flex", flexDirection: "column", gap: 2}}>
 
                     <TextField
                         label="Treatment Name"
                         value={selectedTreatment?.medicationName || ""}
                         onChange={(e) =>
-                            setSelectedTreatment(prev => ({ ...prev, medicationName: e.target.value }))
+                            setSelectedTreatment(prev => ({...prev, medicationName: e.target.value}))
                         }
                     />
 
@@ -151,7 +228,7 @@ export default function Treatments() {
                         label="Dosage"
                         value={selectedTreatment?.dosage || ""}
                         onChange={(e) =>
-                            setSelectedTreatment(prev => ({ ...prev, dosage: e.target.value }))
+                            setSelectedTreatment(prev => ({...prev, dosage: e.target.value}))
                         }
                     />
 
@@ -160,7 +237,7 @@ export default function Treatments() {
                         type="number"
                         value={selectedTreatment?.timesPerDay || ""}
                         onChange={(e) =>
-                            setSelectedTreatment(prev => ({ ...prev, timesPerDay: e.target.value }))
+                            setSelectedTreatment(prev => ({...prev, timesPerDay: e.target.value}))
                         }
                     />
 
@@ -168,7 +245,7 @@ export default function Treatments() {
                         <FormControl fullWidth margin="normal">
                             <DatePicker
                                 label="Start Date"
-                                value={selectedTreatment.startDate ? new Date(selectedTreatment.startDate) : null}
+                                value={selectedTreatment?.startDate ? new Date(selectedTreatment.startDate) : null}
                                 onChange={(value) => {
                                     setSelectedTreatment(prev => ({
                                         ...prev,
@@ -182,8 +259,8 @@ export default function Treatments() {
                         <FormControl fullWidth margin="normal">
                             <DatePicker
                                 label="End Date"
-                                value={selectedTreatment.endDate ? new Date(selectedTreatment.endDate) : null}
-                                minDate={selectedTreatment.startDate ? new Date(selectedTreatment.startDate) : null}
+                                value={selectedTreatment?.endDate ? new Date(selectedTreatment.endDate) : null}
+                                minDate={selectedTreatment?.startDate ? new Date(selectedTreatment.startDate) : null}
                                 onChange={(value) => {
                                     setSelectedTreatment(prev => ({
                                         ...prev,
@@ -199,7 +276,7 @@ export default function Treatments() {
                         label="Notes"
                         value={selectedTreatment?.notes || ""}
                         onChange={(e) =>
-                            setSelectedTreatment(prev => ({ ...prev, notes: e.target.value }))
+                            setSelectedTreatment(prev => ({...prev, notes: e.target.value}))
                         }
                     />
 
