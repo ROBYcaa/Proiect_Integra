@@ -135,11 +135,19 @@ export default function Treatments() {
                     "Search treatments or patients..."
                 value={searchTerm}
                 onChange={handleSearchChange}
+                style={{
+                    width: "300px",
+                    padding: "8px",
+                    marginRight: "20px",
+                    marginBottom: "20px"
+                }}
             />
 
             <select
                 value={filterStatus}
                 onChange={handleFilterChange}
+                style={{ padding: "8px", marginBottom: "20px" }}
+
             >
                 <option value="All">All</option>
                 <option value="Active">Active</option>
