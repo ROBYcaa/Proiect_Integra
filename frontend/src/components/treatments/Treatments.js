@@ -6,7 +6,7 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogTitle, FormControl,
+    DialogTitle, FormControl, Pagination,
     TextField,
     Typography
 } from "@mui/material";
@@ -25,8 +25,9 @@ export default function Treatments() {
     const [selectedTreatment, setSelectedTreatment] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [filterStatus, setFilterStatus] = useState("All")
-
     const [filteredTreatments, setFilteredTreatments] = useState([]);
+    const [page, setPage] = useState(0);
+    const [pageSize] = useState(10);
 
 
     const formatDate = (isoString) => {
@@ -67,8 +68,9 @@ export default function Treatments() {
 
     const fetchTreatments = async () => {
         try {
-            const data = await getTreatments(doctorId);
+            const data = await getTreatments(doctorId, page, pageSize);
             setTreatments(data);
+            console.log(data)
             setFilteredTreatments(data);
         } catch (err) {
             setError(err.message);
@@ -77,10 +79,10 @@ export default function Treatments() {
         }
     };
 
-
     useEffect(() => {
+
         fetchTreatments();
-    }, [])
+    }, [doctorId, page]);
 
     const applyFilters = () => {
         let result = [...treatments];
@@ -146,7 +148,7 @@ export default function Treatments() {
             <select
                 value={filterStatus}
                 onChange={handleFilterChange}
-                style={{ padding: "8px", marginBottom: "20px" }}
+                style={{padding: "8px", marginBottom: "20px"}}
 
             >
                 <option value="All">All</option>
@@ -287,9 +289,22 @@ export default function Treatments() {
                     <Button variant="contained" onClick={handleEditSave}>Save</Button>
                 </DialogActions>
             </Dialog>
+            <div style={{
+                display: "flex"
+                , justifyContent: "center"
+                , marginTop: "20px"
+            }}><Pagination
+                count={100}
+                page={page + 1}
+                onChange={(event, value) => setPage(value - 1)}
+                color=
+                    "primary"
+                size=
+                    "large"
+            />
+            </div>
+            </div>
 
-        </div>
+            );
 
-    );
-
-};
+            };
