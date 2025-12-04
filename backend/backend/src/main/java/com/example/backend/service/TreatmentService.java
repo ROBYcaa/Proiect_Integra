@@ -3,6 +3,8 @@ package com.example.backend.service;
 import com.example.backend.model.Treatment;
 import com.example.backend.repository.TreatmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -61,7 +63,7 @@ public class TreatmentService {
         return treatmentRepository.save(existing);
     }
 
-    public List<Treatment> getTreatmentsByDoctor(String doctorId) {
-        return treatmentRepository.findByDoctorId(doctorId);
+    public Page<Treatment> getTreatmentsByDoctor(String doctorId, Pageable pageable) {
+        return treatmentRepository.findByDoctorId(doctorId, pageable);
     }
 }
