@@ -31,7 +31,7 @@ public class TreatmentDTO {
         this.notes = t.getNotes();
         this.doctorId = t.getDoctorId();
         if (t.getPatientId() != null) {
-            UserDetail patient = repo.findById(t.getPatientId()).orElse(null);
+            UserDetail patient = repo.findByUserId(t.getPatientId()).orElse(null);
             if (patient != null) {
                 this.patientId = t.getPatientId();
                 this.patientFirstName = patient.getFirstName();

@@ -69,7 +69,7 @@ export default function PrescriptionForm() {
         e.preventDefault();
         console.log("Prescription submitted:", form);
         try {
-            const body = { ...form, frequency: Number(form.frequency) };
+            const body = { ...form, timesPerDay: Number(form.timesPerDay) };
             const result = await postTreatment(body);
             console.log("Treatment added:", result);
 
@@ -107,7 +107,7 @@ export default function PrescriptionForm() {
                     label="Select Patient"
                 >
                     {patients.map(p => (
-                        <MenuItem key={p.id} value={p.id}>
+                        <MenuItem key={p.id} value={p.userId}>
                             {p.firstName} {p.lastName}
                         </MenuItem>
                     ))}
