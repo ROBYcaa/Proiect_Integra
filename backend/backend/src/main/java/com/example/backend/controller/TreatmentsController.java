@@ -64,15 +64,23 @@ public class TreatmentsController {
     }
 
     @GetMapping("/doctor/{doctorId}")
-    public List<TreatmentDTO> getTreatmentsByDoctor(@PathVariable String doctorId,
+    public Page<TreatmentDTO> getTreatmentsByDoctor(@PathVariable String doctorId,
                                                     @RequestParam(defaultValue = "0") int page,
-                                                    @RequestParam(defaultValue = "10") int size) {
+                                                    @RequestParam(defaultValue = "10") int size,
+                                                    @RequestParam(required = false) String search,
+                                                    @RequestParam(defaultValue = "all") String filter
+    ) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Treatment> treatmentsPage = treatmentService.getTreatmentsByDoctor(doctorId, pageable);
-        return treatmentsPage.stream()
-                .map(t -> new TreatmentDTO(t, userDetailRepository))
-                .collect(Collectors.toList());
+        Page<Treatment> treatmentsPage =
+                treatmentService.getTreatmentsByDoctor(
+                        doctorId,
+                        pageable,
+                        search,
+                        filter
+                );
+        return treatmentsPage.map(t -> new TreatmentDTO(t, userDetailRepository));
     }
+
 
     @PutMapping("/{id}")
     public Treatment updateTreatment(@PathVariable String id,@RequestBody Treatment updatedTreatment) {

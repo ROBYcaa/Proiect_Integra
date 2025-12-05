@@ -35,8 +35,8 @@ export const postTreatment = async (postTreatmentBody) => {
     }
 };
 
-export const getTreatments = async (doctorId, page , size) => {
-    const response = await axiosInstance.get(`/treatments/doctor/${doctorId}?page=${page}&size=${size}`);
+export const getTreatments = async (doctorId, page , size, search, filter) => {
+    const response = await axiosInstance.get(`/treatments/doctor/${doctorId}?page=${page ?? ""}&size=${size ?? ""}&search=${search ?? ""}&filter=${filter ?? ""}`);
     return response.data;
 };
 

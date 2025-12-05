@@ -28,6 +28,8 @@ export default function Treatments() {
     const [filteredTreatments, setFilteredTreatments] = useState([]);
     const [page, setPage] = useState(0);
     const [pageSize] = useState(10);
+    const [totalPages, setTotalPages] = useState(0);
+
 
 
     const formatDate = (isoString) => {
@@ -68,10 +70,18 @@ export default function Treatments() {
 
     const fetchTreatments = async () => {
         try {
-            const data = await getTreatments(doctorId, page, pageSize);
-            setTreatments(data);
-            console.log(data)
-            setFilteredTreatments(data);
+            const data = await getTreatments(
+                doctorId,
+                page,
+                pageSize,
+                searchTerm,
+                filterStatus
+            );
+
+            setTreatments(data.content);
+            setFilteredTreatments(data.content);
+            setTotalPages(data.totalPages);
+
         } catch (err) {
             setError(err.message);
         } finally {
@@ -80,49 +90,8 @@ export default function Treatments() {
     };
 
     useEffect(() => {
-
         fetchTreatments();
-    }, [doctorId, page]);
-
-    const applyFilters = () => {
-        let result = [...treatments];
-
-        if (searchTerm.trim() !== "") {
-            const term = searchTerm.toLowerCase();
-
-            result = result.filter((t) =>
-                (t.medicationName || "").toLowerCase().includes(term) ||
-                (`${t.patientFirstName || ""} ${t.patientLastName || ""}`).toLowerCase().includes(term)
-            );
-        }
-
-        const today = new Date();
-
-        if (filterStatus === "Active") {
-            result = result.filter(
-                (t) => t.endDate && new Date(t.endDate) > today
-            );
-        }
-
-        if (filterStatus === "Ended") {
-            result = result.filter(
-                (t) => t.endDate && new Date(t.endDate) < today
-            );
-        }
-
-        if (filterStatus === "NoEndDate") {
-            result = result.filter(
-                (t) => !t.endDate || t.endDate === "" || t.endDate === null
-            );
-        }
-
-        setFilteredTreatments(result);
-    };
-
-
-    useEffect(() => {
-        applyFilters();
-    }, [searchTerm, filterStatus, treatments]);
+    }, [doctorId, page, searchTerm, filterStatus]);
 
     return (
         <div style={{padding: "20px"}}>
@@ -294,14 +263,13 @@ export default function Treatments() {
                 , justifyContent: "center"
                 , marginTop: "20px"
             }}><Pagination
-                count={100}
-                page={page + 1}
-                onChange={(event, value) => setPage(value - 1)}
-                color=
-                    "primary"
-                size=
-                    "large"
-            />
+                    count={totalPages}
+                    page={page + 1}
+                    onChange={(event, value) => setPage(value - 1)}
+                    color="primary"
+                    size="large"
+                />
+
             </div>
             </div>
 
