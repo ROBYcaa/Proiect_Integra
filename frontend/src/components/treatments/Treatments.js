@@ -29,7 +29,7 @@ export default function Treatments() {
     const [page, setPage] = useState(0);
     const [pageSize] = useState(10);
     const [totalPages, setTotalPages] = useState(0);
-
+    const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
 
 
     const formatDate = (isoString) => {
@@ -74,7 +74,7 @@ export default function Treatments() {
                 doctorId,
                 page,
                 pageSize,
-                searchTerm,
+                debouncedSearch,
                 filterStatus
             );
 
@@ -90,8 +90,15 @@ export default function Treatments() {
     };
 
     useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearch(searchTerm);
+        }, 300);
+        return () => clearTimeout(handler);
+    }, [searchTerm]);
+
+    useEffect(() => {
         fetchTreatments();
-    }, [doctorId, page, searchTerm, filterStatus]);
+    }, [doctorId, page, debouncedSearch, filterStatus]);
 
     return (
         <div style={{padding: "20px"}}>
