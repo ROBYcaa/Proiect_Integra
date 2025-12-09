@@ -43,7 +43,7 @@ function Dashboard() {
         const fetchTreatments = async () => {
             try {
                 const data = await getTreatments(doctorId);
-                setNumberOfTreatments(data.length);
+                setNumberOfTreatments(data.totalElements);
                 console.log(data.length)
             } catch (err) {
                 setError(err.message);

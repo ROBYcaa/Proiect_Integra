@@ -2,22 +2,17 @@ package com.example.backend.controller;
 
 import com.example.backend.dto.TreatmentDTO;
 import com.example.backend.model.Treatment;
-import com.example.backend.model.User;
 import com.example.backend.repository.UserDetailRepository;
 import com.example.backend.service.TreatmentService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
-import com.example.backend.repository.UserRepository;
 
 import org.springframework.data.domain.Pageable;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/treatments")
@@ -72,7 +67,7 @@ public class TreatmentsController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Treatment> treatmentsPage =
-                treatmentService.getTreatmentsByDoctor(
+                treatmentService.getTreatmentByDoctorId(
                         doctorId,
                         pageable,
                         search,
