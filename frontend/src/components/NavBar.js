@@ -38,6 +38,13 @@ export default function NavBar({ user, onLogout }) {
                         </Button>
                     )}
 
+                    {user?.loggedIn && user.role === "doctor" && (
+                        <Button color="inherit" component={Link} to="/export">
+                            Export
+                        </Button>
+                    )}
+
+
                 </Box>
                 <Box className="navbar-auth">
                     {!user?.loggedIn ? (
