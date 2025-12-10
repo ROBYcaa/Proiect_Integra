@@ -49,3 +49,13 @@ export const updateTreatment = async (id, updatedTreatment) => {
 export const deleteTreatment = async (id) => {
     await axiosInstance.delete(`/treatments/${id}`);
 };
+
+export const createExport = async (exportBody) => {
+    try {
+        const response = await axiosInstance.post(`/treatments/export`, exportBody);
+        return response.data;
+    }catch (error) {
+        console.error("Error", error);
+        throw error;
+    }
+}

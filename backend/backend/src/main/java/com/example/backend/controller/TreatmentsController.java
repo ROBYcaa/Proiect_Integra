@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import com.example.backend.dto.ExportDTO;
 import com.example.backend.dto.TreatmentDTO;
 import com.example.backend.model.Treatment;
 import com.example.backend.repository.UserDetailRepository;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 
 import org.springframework.data.domain.Pageable;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,5 +82,17 @@ public class TreatmentsController {
     @PutMapping("/{id}")
     public Treatment updateTreatment(@PathVariable String id,@RequestBody Treatment updatedTreatment) {
         return treatmentService.updateTreatment(id, updatedTreatment);
+    }
+
+    @PostMapping("/export")
+    public ResponseEntity<Void> exportPdf(@RequestBody ExportDTO request) {
+
+        String patientId = request.getPatientId();
+        Date startDate = request.getStartDate();
+        Date endDate = request.getEndDate();
+
+        List<Treatment> treatments = treatmentService.findTreatmentsForExport(patientId, startDate, endDate);
+
+        return ResponseEntity.noContent().build();
     }
 }

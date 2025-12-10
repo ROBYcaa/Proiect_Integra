@@ -5,6 +5,8 @@ import {useEffect, useState} from "react";
 import NavBar from "./components/NavBar";
 import PrescriptionForm from "./components/prescriptionform/PrescriptionForm";
 import Treatments from "./components/treatments/Treatments";
+import Export from "./components/export/Export";
+
 
 function App() {
     const [user, setUser] = useState({
@@ -43,6 +45,8 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard/>} />
                 <Route path="/prescribe" element={<PrescriptionForm />} />
                 <Route path="/treatments" element={<Treatments />} />
+                <Route path="/export" element={<Export />} />
+
 
             </Routes>
         </BrowserRouter>

@@ -156,4 +156,9 @@ public class TreatmentService {
 
         return new PageImpl<>(results, pageable, total);
     }
+    public List<Treatment> findTreatmentsForExport(String patientId, Date startDate, Date endDate) {
+        return treatmentRepository
+                .findByPatientIdAndStartDateBetween(patientId, startDate, endDate);
+    }
+
 }
