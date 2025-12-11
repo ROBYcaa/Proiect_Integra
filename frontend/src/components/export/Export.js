@@ -13,15 +13,7 @@ const Export = () => {
     }, []);
 
     const handleExport = () => {
-        createExport({ patientId, startDate, endDate }).then((response) => {
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement("a");
-            link.href = url;
-            link.setAttribute("download"
-                ,
-                "prescriptions.pdf");
-            link.click();
-        });
+        createExport({ patientId, startDate, endDate });
     };
 
     return (
@@ -35,7 +27,7 @@ const Export = () => {
             >
                 <option value="">Select a patient</option>
                 {patients.map((p) => (
-                    <option key={p.id} value={p.id}>
+                    <option key={p.userId} value={p.userId}>
                         {p.firstName} {p.lastName}
                     </option>
                 ))}

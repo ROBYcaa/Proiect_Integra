@@ -1,18 +1,24 @@
 package com.example.backend.service;
 
 
+import com.example.backend.dto.ExportDTO;
+import com.example.backend.model.UserDetail;
+import com.example.backend.repository.UserDetailRepository;
+import com.example.backend.util.PdfGenerator;
 import org.bson.Document;
 import com.example.backend.model.Treatment;
 import com.example.backend.repository.TreatmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.domain.PageImpl;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -23,14 +29,14 @@ import java.util.Optional;
 @Service
 public class TreatmentService {
 
-    @Autowired
-    private TreatmentRepository treatmentRepository;
+    private final TreatmentRepository treatmentRepository;
     private final MongoTemplate mongoTemplate;
+    private final UserDetailRepository userDetailRepository;
 
-    public TreatmentService(TreatmentRepository treatmentRepository,MongoTemplate mongoTemplate) {
+    public TreatmentService(TreatmentRepository treatmentRepository, MongoTemplate mongoTemplate, UserDetailRepository userDetailRepository) {
         this.treatmentRepository = treatmentRepository;
         this.mongoTemplate = mongoTemplate;
-
+        this.userDetailRepository = userDetailRepository;
     }
 
     public List<Treatment> getAllTreatments() {
@@ -156,9 +162,20 @@ public class TreatmentService {
 
         return new PageImpl<>(results, pageable, total);
     }
-    public List<Treatment> findTreatmentsForExport(String patientId, Date startDate, Date endDate) {
-        return treatmentRepository
-                .findByPatientIdAndStartDateBetween(patientId, startDate, endDate);
-    }
 
+public List<Treatment> getByPatientIdAndDate(ExportDTO exportDTO) {
+    return this.treatmentRepository.findTreatmentByPatientId(exportDTO.getPatientId()).stream()
+            .filter(treatment -> !treatment.getStartDate().after(exportDTO.getEndDate()) &&
+                    !treatment.getEndDate().before(exportDTO.getStartDate()))
+            .toList();
+}
+    public byte[] generatePdf(ExportDTO dto) throws Exception {
+
+        UserDetail user = userDetailRepository.findByUserId(dto.getPatientId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<Treatment> treatments = getByPatientIdAndDate(dto);
+
+        return PdfGenerator.generatePdf(user, treatments);
+    }
 }
