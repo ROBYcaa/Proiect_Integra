@@ -7,11 +7,14 @@ import com.example.backend.repository.UserDetailRepository;
 import com.example.backend.service.TreatmentService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.data.domain.Pageable;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -85,14 +88,13 @@ public class TreatmentsController {
     }
 
     @PostMapping("/export")
-    public ResponseEntity<Void> exportPdf(@RequestBody ExportDTO request) {
+    public ResponseEntity<byte[]> exportPdf(@RequestBody ExportDTO request) throws Exception {
 
-        String patientId = request.getPatientId();
-        Date startDate = request.getStartDate();
-        Date endDate = request.getEndDate();
+        byte[] pdf = treatmentService.generatePdf(request);
 
-        List<Treatment> treatments = treatmentService.findTreatmentsForExport(patientId, startDate, endDate);
-
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=prescriptions.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
     }
 }
