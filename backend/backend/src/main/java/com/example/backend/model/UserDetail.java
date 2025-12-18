@@ -3,6 +3,8 @@ package com.example.backend.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Date;
+
 @Document(collection = "userDetails")
 public class UserDetail {
 
@@ -11,7 +13,7 @@ public class UserDetail {
     private String userId;
     private String firstName;
     private String lastName;
-    private int age;
+    private Date dateOfBirth;
     private int height;
     private int weight;
     private String sex;
@@ -19,15 +21,15 @@ public class UserDetail {
 
     public UserDetail() {}
 
-    public UserDetail(String userId, String firstName, String lastName, int age, int height, int weight, String sex, String extraInfo) {
+    public UserDetail(String userId, String firstName, String lastName, Date dateOfBirth, int height, int weight, String sex, String extraInfo) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.age = age;
         this.height = height;
         this.weight = weight;
         this.sex = sex;
         this.extraInfo = extraInfo;
+        this.dateOfBirth = dateOfBirth;
     }
 
     // Getteri și setteri
@@ -42,9 +44,6 @@ public class UserDetail {
     public String getUserId() { return userId; }
     public void setUserId(String userId) { this.userId = userId; }
 
-    public int getAge() { return age; }
-    public void setAge(int age) { this.age = age; }
-
     public int getHeight() { return height; }
     public void setHeight(int height) { this.height = height; }
 
@@ -56,4 +55,7 @@ public class UserDetail {
 
     public String getExtraInfo() { return extraInfo; }
     public void setExtraInfo(String extraInfo) { this.extraInfo = extraInfo; }
+
+    public Date getDateOfBirth() { return dateOfBirth; }
+    public void setDateOfBirth(Date dateOfBirth) { this.dateOfBirth = dateOfBirth; }
 }

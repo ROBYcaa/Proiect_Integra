@@ -38,7 +38,7 @@ public class PdfGenerator {
 
         y = drawText(cs, "Name: " + user.getFirstName(), 12, y, false);
         y = drawText(cs, "Sex: " + user.getSex(), 12, y, false);
-        y = drawText(cs, "Age: " + user.getAge(), 12, y, false);
+        y = drawText(cs, "Birth Date: " + user.getDateOfBirth(), 12, y, false);
         y = drawText(cs, "Height: " + user.getHeight(), 12, y, false);
         y = drawText(cs, "Weight: " + user.getWeight(), 12, y, false);
         y = drawText(cs, "Extra Info: " + (user.getExtraInfo()==null?"-":user.getExtraInfo()), 12, y, false);

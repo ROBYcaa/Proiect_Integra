@@ -11,7 +11,7 @@ function PatientDetails({ patient, handlePrescribe  }) {
             <h3>{patient.lastName} {patient.firstName}</h3>
             <p>Height: {patient.height}</p>
             <p>Weight: {patient.weight}</p>
-            <p>Varsta: {patient.age}</p>
+            <p>Date of Birth: {new Date(patient.dateOfBirth).toLocaleDateString()}</p>
             <p>Sex: {patient.sex}</p>
             <p>Extra info: {patient.extrainfo}</p>
             <button
