@@ -9,5 +9,9 @@ const apiClient = axios.create({
 export const login = (data) => {
     return apiClient.post('/auth/login', data);
 };
+export const register = (data) => {
+    return apiClient.post('/auth/register', data);
+};
+
 
 export default apiClient;
