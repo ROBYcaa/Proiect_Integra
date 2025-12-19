@@ -3,7 +3,6 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-nativ
 import { Ionicons } from '@expo/vector-icons';
 import { register } from '../api/api';
 
-
 export default function RegisterScreen() {
     const [isPasswordHidden, setIsPasswordHidden] = useState(true);
     const [message, setMessage] = useState('');
@@ -26,7 +25,34 @@ export default function RegisterScreen() {
         }));
     };
 
+    const passwordRules = {
+        length: form.password.length >= 8,
+        upper: /[A-Z]/.test(form.password),
+        lower: /[a-z]/.test(form.password),
+        digit: /[0-9]/.test(form.password),
+        special: /[^A-Za-z0-9]/.test(form.password),
+    };
+
     const handleRegister = async () => {
+        if (
+            !form.email ||
+            !form.password ||
+            !form.firstName ||
+            !form.lastName ||
+            !form.sex ||
+            !form.height ||
+            !form.weight ||
+            !form.dateOfBirth
+        ) {
+            setMessage('All fields are required');
+            return;
+        }
+
+        if (!Object.values(passwordRules).every(Boolean)) {
+            setMessage('Password does not meet requirements');
+            return;
+        }
+
         try {
             await register({
                 email: form.email,
@@ -43,8 +69,6 @@ export default function RegisterScreen() {
             setMessage('Error');
         }
     };
-
-
 
     return (
         <View style={styles.container}>
@@ -72,6 +96,25 @@ export default function RegisterScreen() {
                         color="gray"
                     />
                 </TouchableOpacity>
+            </View>
+
+            {/* VALIDARE PAROLA LIVE */}
+            <View style={{ marginBottom: 10 }}>
+                <Text style={{ color: passwordRules.length ? 'green' : 'red' }}>
+                    • Minimum 8 characters
+                </Text>
+                <Text style={{ color: passwordRules.upper ? 'green' : 'red' }}>
+                    • One uppercase letter
+                </Text>
+                <Text style={{ color: passwordRules.lower ? 'green' : 'red' }}>
+                    • One lowercase letter
+                </Text>
+                <Text style={{ color: passwordRules.digit ? 'green' : 'red' }}>
+                    • One digit
+                </Text>
+                <Text style={{ color: passwordRules.special ? 'green' : 'red' }}>
+                    • One special character
+                </Text>
             </View>
 
             <TextInput
@@ -117,7 +160,6 @@ export default function RegisterScreen() {
                 onChangeText={(value) => updateForm('dateOfBirth', value)}
             />
 
-
             <TextInput
                 style={styles.input}
                 placeholder="Height (cm)"
@@ -137,12 +179,12 @@ export default function RegisterScreen() {
             <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
                 <Text style={styles.registerText}>Register</Text>
             </TouchableOpacity>
+
             {message !== '' && (
                 <Text style={{ textAlign: 'center', marginTop: 10 }}>
                     {message}
                 </Text>
             )}
-
         </View>
     );
 }

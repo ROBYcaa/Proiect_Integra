@@ -3,15 +3,20 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-nativ
 import { Ionicons } from '@expo/vector-icons';
 import { login } from '../api/api';
 
-export default function LoginScreen() {
+export default function LoginScreen({ navigation }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isPasswordHidden, setIsPasswordHidden] = useState(true);
     const [message, setMessage] = useState('');
 
     const handleLogin = async () => {
+        if (!email || !password) {
+            setMessage('All fields are required');
+            return;
+        }
+
         try {
-            const response = await login({ email, password });
+            await login({ email, password });
             setMessage('Login reusit');
         } catch (error) {
             setMessage('Eroare la login');
@@ -50,8 +55,8 @@ export default function LoginScreen() {
                 <Text style={styles.loginText}>Login</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity>
-                <Text style={styles.registerText}>Register</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+                <Text>Register</Text>
             </TouchableOpacity>
 
             {message !== '' && <Text>{message}</Text>}

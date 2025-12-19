@@ -10,6 +10,7 @@ import com.example.backend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -27,6 +28,12 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+    private final PasswordEncoder passwordEncoder;
+    public AuthController(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
+
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> loginData) {
@@ -34,9 +41,11 @@ public class AuthController {
         String password = loginData.get("password");
 
         User user = userService.getUserByEmail(email).orElse(null);
-        if (user == null || !user.getPassword().equals(password)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credențiale invalide");
+        if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Credențiale invalide");
         }
+
 
         String accessToken = jwtUtil.generateToken(user.getId(), user.getRole());
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
