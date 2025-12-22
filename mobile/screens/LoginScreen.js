@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { login } from '../api/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LoginScreen({ navigation }) {
     const [email, setEmail] = useState('');
@@ -18,10 +19,23 @@ export default function LoginScreen({ navigation }) {
         try {
             await login({ email, password });
             setMessage('Login reusit');
+
+            try {
+                await AsyncStorage.setItem('currentUser', JSON.stringify({ email }));
+                console.log('User saved!');
+            } catch (error) {
+                console.log('Error saving user:', error);
+            }
+
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'Main' }],
+            });
         } catch (error) {
             setMessage('Eroare la login');
         }
     };
+
 
     return (
         <View style={styles.container}>
