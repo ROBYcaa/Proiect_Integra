@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API = 'http://192.168.100.117:8080';
+const API = 'http://10.3.0.179:8080';
 
 const apiClient = axios.create({
     baseURL: API,
@@ -12,6 +12,13 @@ export const login = (data) => {
 export const register = (data) => {
     return apiClient.post('/api/auth/register', data);
 };
+export const getPatientTreatments = (patientId) => {
+    return axios.get(`/api/patient/treatments/${patientId}`);
+};
+export const getPatientTreatmentsByDate = (patientId, date) => {
+    return apiClient.get(`/api/patient/treatments/${patientId}/date/${date}`);
+};
+
 
 
 export default apiClient;
