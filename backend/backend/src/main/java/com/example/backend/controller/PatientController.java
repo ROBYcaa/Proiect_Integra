@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import com.example.backend.dto.TreatmentIntakeDTO;
 import com.example.backend.model.Treatment;
 import com.example.backend.service.PatientService;
 import org.springframework.web.bind.annotation.*;
@@ -29,5 +30,12 @@ public class PatientController {
     ) {
         LocalDate selectedDate = LocalDate.parse(date);
         return patientService.getTreatmentsForPatientByDate(patientId, selectedDate);
+    }
+
+    @PostMapping("/treatment-intake")
+    public Treatment markTreatmentIntake(
+            @RequestBody TreatmentIntakeDTO treatmentIntakeDTO
+    ) {
+        return patientService.markTreatmentIntake(treatmentIntakeDTO);
     }
 }
