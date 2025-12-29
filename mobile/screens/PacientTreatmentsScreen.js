@@ -1,37 +1,33 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, FlatList, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { getPatientTreatments } from '../api/api';
 
-export default function HomeScreen() {
-    const [userEmail, setUserEmail] = useState('');
+export default function PatientTreatmentsScreen() {
     const [treatments, setTreatments] = useState([]);
 
-    const loadUserAndTreatments = async () => {
+    const loadTreatments = async () => {
         try {
             const userData = await AsyncStorage.getItem('currentUser');
-            if (userData !== null) {
+            if (userData) {
                 const user = JSON.parse(userData);
-                setUserEmail(user.email);
-
-                // cerem tratamentele pacientului curent
                 const response = await getPatientTreatments(user.id);
                 setTreatments(response.data);
             }
         } catch (error) {
-            console.log('Error loading data:', error);
+            console.log('Error loading treatments:', error);
         }
     };
 
     useEffect(() => {
-        loadUserAndTreatments();
+        loadTreatments();
     }, []);
 
-    const renderTreatment = ({ item }) => (
-        <View style={styles.treatmentCard}>
+    const renderItem = ({ item }) => (
+        <View style={styles.card}>
             <Ionicons name="medkit-outline" size={24} color="#000" />
-            <View style={styles.treatmentText}>
+            <View style={styles.textContainer}>
                 <Text style={styles.medication}>{item.medicationName}</Text>
                 <Text style={styles.details}>
                     {item.dosage} – {item.timesPerDay} / zi
@@ -42,18 +38,12 @@ export default function HomeScreen() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Home</Text>
-
-            <Text style={styles.subtitle}>
-                Bine ati venit{userEmail ? `, ${userEmail}` : ''}!
-            </Text>
-
-            <Text style={styles.sectionTitle}>Tratamentele mele</Text>
+            <Text style={styles.title}>Tratamentele mele</Text>
 
             <FlatList
                 data={treatments}
                 keyExtractor={(item) => item.id}
-                renderItem={renderTreatment}
+                renderItem={renderItem}
             />
         </View>
     );
@@ -66,23 +56,11 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     title: {
-        fontSize: 28,
+        fontSize: 22,
         fontWeight: 'bold',
-        textAlign: 'center',
-    },
-    subtitle: {
-        fontSize: 16,
-        marginTop: 10,
         marginBottom: 20,
-        textAlign: 'center',
-        color: '#666',
     },
-    sectionTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 10,
-    },
-    treatmentCard: {
+    card: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 15,
@@ -91,7 +69,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginBottom: 10,
     },
-    treatmentText: {
+    textContainer: {
         marginLeft: 10,
     },
     medication: {
