@@ -3,7 +3,9 @@ package com.example.backend.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Document(collection = "treatments")
 public class Treatment {
@@ -19,18 +21,10 @@ public class Treatment {
     private Date startDate;
     private Date endDate;
 
+    private List<TreatmentIntake> treatmentIntakes = new ArrayList<>();
+
     public Treatment() {}
 
-    public Treatment(String medicationName, String dosage, int timesPerDay, String doctorId, String patientId, String notes, Date startDate, Date endDate) {
-        this.medicationName = medicationName;
-        this.dosage = dosage;
-        this.timesPerDay = timesPerDay;
-        this.doctorId = doctorId;
-        this.patientId = patientId;
-        this.notes = notes;
-        this.startDate = startDate;
-        this.endDate = endDate;
-    }
 
     public String getId() { return id; }
 
@@ -46,11 +40,11 @@ public class Treatment {
     public String getDoctorId() { return doctorId; }
     public void setDoctorId(String doctorId) { this.doctorId = doctorId; }
 
-    public String getNotes() { return notes; }
-    public void setNotes(String notes) { this.notes = notes; }
-
     public String getPatientId() { return patientId; }
     public void setPatientId(String patientId) { this.patientId = patientId; }
+
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
 
     public Date getStartDate() { return startDate; }
     public void setStartDate(Date startDate) { this.startDate = startDate; }
@@ -58,4 +52,15 @@ public class Treatment {
     public Date getEndDate() { return endDate; }
     public void setEndDate(Date endDate) { this.endDate = endDate; }
 
+    public List<TreatmentIntake> getTreatmentIntakes() {
+        return treatmentIntakes;
+    }
+
+    public void setTreatmentIntakes(List<TreatmentIntake> treatmentIntakes) {
+        this.treatmentIntakes = treatmentIntakes;
+    }
+
+    public void addTreatmentIntake(TreatmentIntake intake) {
+        this.treatmentIntakes.add(intake);
+    }
 }
