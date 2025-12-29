@@ -15,6 +15,10 @@ export const register = (data) => {
 export const getPatientTreatments = (patientId) => {
     return axios.get(`/api/patient/treatments/${patientId}`);
 };
+export const getPatientTreatmentsByDate = (patientId, date) => {
+    return apiClient.get(`/api/patient/treatments/${patientId}/date/${date}`);
+};
+
 
 
 export default apiClient;
