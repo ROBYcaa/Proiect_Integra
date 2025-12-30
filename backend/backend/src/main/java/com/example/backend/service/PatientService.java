@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,27 +27,23 @@ public class PatientService {
 
     public List<Treatment> getTreatmentsForPatientByDate(String patientId, LocalDate date) {
 
-        Date startOfDay = Date.from(
+        Date selectedDate = Date.from(
                 date.atStartOfDay(ZoneId.systemDefault()).toInstant()
         );
 
-        Date endOfDay = Date.from(
-                date.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant()
-        );
-
-        return treatmentRepository.findByPatientIdAndStartDateBetween(
+        return treatmentRepository.findByPatientIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
                 patientId,
-                startOfDay,
-                endOfDay
+                selectedDate,
+                selectedDate
         );
     }
 
-    public Treatment markTreatmentIntake(TreatmentIntakeDTO treatmentIntake) {
+    public Treatment markTreatmentIntake(TreatmentIntakeDTO treatmentIntakeDTO) {
 
-        String treatmentId = treatmentIntake.getTreatmentId();
-        String patientId = treatmentIntake.getPatientId();
-        LocalDate date = treatmentIntake.getDate();
-        Integer doseIndex = treatmentIntake.getDoseIndex();
+        String treatmentId = treatmentIntakeDTO.getTreatmentId();
+        String patientId = treatmentIntakeDTO.getPatientId();
+        Date intakeDate = treatmentIntakeDTO.getDate();
+        Integer doseIndex = treatmentIntakeDTO.getDoseIndex();
 
         Treatment treatment = treatmentRepository.findById(treatmentId)
                 .orElseThrow(() -> new RuntimeException("Tratament inexistent"));
@@ -55,29 +52,23 @@ public class PatientService {
             throw new RuntimeException("Acces interzis");
         }
 
-        TreatmentIntake intake = treatment.getTreatmentIntakes()
-                .stream()
-                .filter(i ->
-                        toLocalDate(i.getDate()).equals(date) &&
-                                i.getDoseIndex().equals(doseIndex)
-                )
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Doza nu există"));
-
-        if (intake.getTakenAt() != null) {
-            throw new RuntimeException("Doza este deja administrată");
+        if (treatment.getTreatmentIntakes() == null) {
+            treatment.setTreatmentIntakes(new ArrayList<>());
         }
 
-        if (date.isBefore(toLocalDate(treatment.getStartDate())) ||
-                date.isAfter(toLocalDate(treatment.getEndDate()))) {
+        if (intakeDate.before(treatment.getStartDate()) || intakeDate.after(treatment.getEndDate())) {
             throw new RuntimeException("Data este în afara tratamentului");
         }
 
-        if (date.isAfter(LocalDate.now())) {
+        if (intakeDate.after(new Date())) {
             throw new RuntimeException("Nu se poate marca o doză din viitor");
         }
 
-        intake.setTakenAt(new Date());
+        TreatmentIntake intake = new TreatmentIntake();
+        intake.setDate(intakeDate);
+        intake.setDoseIndex(doseIndex);
+
+        treatment.addTreatmentIntake(intake);
 
         return treatmentRepository.save(treatment);
     }

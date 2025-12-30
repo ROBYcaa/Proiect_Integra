@@ -6,7 +6,6 @@ public class TreatmentIntake {
 
     private Date date;
     private Integer doseIndex;
-    private Date takenAt;
 
     public Date getDate() {
         return date;
@@ -22,13 +21,5 @@ public class TreatmentIntake {
 
     public void setDoseIndex(Integer doseIndex) {
         this.doseIndex = doseIndex;
-    }
-
-    public Date getTakenAt() {
-        return takenAt;
-    }
-
-    public void setTakenAt(Date takenAt) {
-        this.takenAt = takenAt;
     }
 }
