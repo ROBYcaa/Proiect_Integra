@@ -17,12 +17,13 @@ export default function LoginScreen({ navigation }) {
         }
 
         try {
-            await login({ email, password });
+            const response = await login( {email, password} );
             setMessage('Login reusit');
-
             try {
                 await AsyncStorage.setItem('currentUser', JSON.stringify({ email }));
                 console.log('User saved!');
+
+                await AsyncStorage.setItem('currentUserId', response.data.userId )
             } catch (error) {
                 console.log('Error saving user:', error);
             }
@@ -32,7 +33,7 @@ export default function LoginScreen({ navigation }) {
                 routes: [{ name: 'Main' }],
             });
         } catch (error) {
-            setMessage('Eroare la login');
+            setMessage('Eroare la login' + error);
         }
     };
 

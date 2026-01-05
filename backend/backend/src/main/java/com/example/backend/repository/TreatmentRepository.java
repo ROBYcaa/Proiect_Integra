@@ -14,6 +14,10 @@ public interface TreatmentRepository extends MongoRepository<Treatment, String> 
     Optional<Treatment> findByMedicationName(String medicationName);
     List<Treatment> findByMedicationNameContainingIgnoreCase(String medicationName);
     Page<Treatment> findByDoctorId(String doctorId, Pageable pageable);
-    List<Treatment> findByPatientIdAndStartDateBetween(String patientId, Date startDate, Date endDate);
     List<Treatment> findTreatmentByPatientId(String patientId);
+    List<Treatment> findByPatientIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
+            String patientId,
+            Date startDate,
+            Date endDate
+    );
 }

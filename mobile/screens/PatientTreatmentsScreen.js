@@ -9,16 +9,19 @@ export default function PatientTreatmentsScreen() {
 
     const loadTreatments = async () => {
         try {
-            const userData = await AsyncStorage.getItem('currentUser');
-            if (userData) {
-                const user = JSON.parse(userData);
-                const response = await getPatientTreatments(user.id);
+            const userId = await AsyncStorage.getItem('currentUserId');
+
+            if (userId) {
+                const response = await getPatientTreatments(userId);
+                console.log('Response:', response.data);
+
                 setTreatments(response.data);
             }
         } catch (error) {
-            console.log('Error loading treatments:', error);
+            console.error('Error loading treatments:', error);
         }
     };
+
 
     useEffect(() => {
         loadTreatments();
