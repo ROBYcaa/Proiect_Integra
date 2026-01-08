@@ -110,12 +110,6 @@ export default function CalendarScreen() {
         }
     };
 
-    const getProgressColor = (percentage) => {
-        if (percentage >= 80) return '#5cb85c';
-        if (percentage >= 40) return '#f0ad4e';
-        return '#d9534f';
-    };
-
     const renderRightActions = (item) => {
         return (
             <TouchableOpacity
@@ -186,10 +180,6 @@ export default function CalendarScreen() {
                             const takenToday = intakesToday.length;
                             const remaining = Math.max(item.timesPerDay - takenToday, 0);
 
-                            const treatmentProgress = item.timesPerDay > 0
-                                ? (takenToday / item.timesPerDay) * 100
-                                : 0;
-
                             return (
                                 <Swipeable
                                     renderRightActions={() =>
@@ -207,23 +197,6 @@ export default function CalendarScreen() {
                                         <Text style={styles.remainingText}>
                                             Remaining today: {remaining}
                                         </Text>
-
-                                        <View style={styles.progressSection}>
-                                            <View style={styles.progressBarBackground}>
-                                                <View
-                                                    style={[
-                                                        styles.progressBarFill,
-                                                        {
-                                                            width: `${treatmentProgress}%`,
-                                                            backgroundColor: getProgressColor(treatmentProgress),
-                                                        },
-                                                    ]}
-                                                />
-                                            </View>
-                                            <Text style={styles.progressText}>
-                                                {Math.round(treatmentProgress)}%
-                                            </Text>
-                                        </View>
                                     </View>
                                 </Swipeable>
                             );
@@ -333,7 +306,6 @@ const styles = StyleSheet.create({
     progressSection: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginTop: 10,
     },
     progressBarBackground: {
         flex: 1,
