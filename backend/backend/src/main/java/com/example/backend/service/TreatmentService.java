@@ -2,6 +2,7 @@ package com.example.backend.service;
 
 
 import com.example.backend.dto.ExportDTO;
+import com.example.backend.dto.TreatmentProgressDTO;
 import com.example.backend.model.UserDetail;
 import com.example.backend.repository.UserDetailRepository;
 import com.example.backend.util.PdfGenerator;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -163,6 +165,7 @@ public class TreatmentService {
         return new PageImpl<>(results, pageable, total);
     }
 
+
 public List<Treatment> getByPatientIdAndDate(ExportDTO exportDTO) {
     return this.treatmentRepository.findTreatmentByPatientId(exportDTO.getPatientId()).stream()
             .filter(treatment -> !treatment.getStartDate().after(exportDTO.getEndDate()) &&
@@ -178,4 +181,34 @@ public List<Treatment> getByPatientIdAndDate(ExportDTO exportDTO) {
 
         return PdfGenerator.generatePdf(user, treatments);
     }
+
+    public TreatmentProgressDTO getTreatmentProgress(String treatmentId) {
+
+        Treatment treatment = treatmentRepository.findById(treatmentId)
+                .orElseThrow(() -> new RuntimeException("Tratament inexistent"));
+
+        long days = ChronoUnit.DAYS.between(
+                treatment.getStartDate().toInstant(),
+                treatment.getEndDate().toInstant()
+        ) + 1;
+
+        int totalPlannedDoses = (int) days * treatment.getTimesPerDay();
+        int takenDoses = treatment.getTreatmentIntakes() != null
+                ? treatment.getTreatmentIntakes().size()
+                : 0;
+
+        double progress = totalPlannedDoses == 0
+                ? 0
+                : (takenDoses * 100.0) / totalPlannedDoses;
+
+        TreatmentProgressDTO dto = new TreatmentProgressDTO();
+        dto.setTreatmentId(treatment.getId());
+        dto.setPatientId(treatment.getPatientId());
+        dto.setTotalPlannedDoses(totalPlannedDoses);
+        dto.setTakenDoses(takenDoses);
+        dto.setProgressPercentage(progress);
+
+        return dto;
+    }
+
 }
