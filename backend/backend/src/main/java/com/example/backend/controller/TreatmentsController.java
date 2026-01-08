@@ -2,6 +2,7 @@ package com.example.backend.controller;
 
 import com.example.backend.dto.ExportDTO;
 import com.example.backend.dto.TreatmentDTO;
+import com.example.backend.dto.TreatmentProgressDTO;
 import com.example.backend.model.Treatment;
 import com.example.backend.repository.UserDetailRepository;
 import com.example.backend.service.TreatmentService;
@@ -96,5 +97,12 @@ public class TreatmentsController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=prescriptions.pdf")
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdf);
+    }
+
+    @GetMapping("/{treatmentId}/progress")
+    public TreatmentProgressDTO getTreatmentProgress(
+            @PathVariable String treatmentId
+    ) {
+        return treatmentService.getTreatmentProgress(treatmentId);
     }
 }

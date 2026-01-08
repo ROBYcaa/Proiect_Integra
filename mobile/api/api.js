@@ -26,4 +26,8 @@ export const markTreatmentIntake = (intakeData) => {
     return apiClient.post('/api/patient/treatment-intake', intakeData);
 };
 
+export const getTreatmentProgress = (treatmentId) => {
+    return apiClient.get(`/api/treatment/${treatmentId}/progress`);
+};
+
 export default apiClient;
