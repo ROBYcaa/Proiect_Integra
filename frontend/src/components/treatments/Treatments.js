@@ -6,9 +6,13 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogTitle, FormControl, Pagination,
+    DialogTitle,
+    FormControl,
+    LinearProgress,
+    Pagination,
     TextField,
-    Typography
+    Typography,
+    Box
 } from "@mui/material";
 import Button from "@mui/material/Button";
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
@@ -31,10 +35,15 @@ export default function Treatments() {
     const [totalPages, setTotalPages] = useState(0);
     const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
 
-
     const formatDate = (isoString) => {
         if (!isoString) return "—";
         return new Date(isoString).toLocaleDateString("ro-RO");
+    };
+
+    const getProgressColor = (percentage) => {
+        if (percentage >= 80) return "#5cb85c";
+        if (percentage >= 40) return "#f0ad4e";
+        return "#d9534f";
     };
 
     const handleDelete = async (treatmentId) => {
@@ -59,9 +68,7 @@ export default function Treatments() {
             setEditOpen(false);
             fetchTreatments();
         } catch (error) {
-            console.error("Error updating treatment:"
-                , error);
-
+            console.error("Error updating treatment:", error);
         }
     };
 
@@ -107,10 +114,8 @@ export default function Treatments() {
             </Typography>
 
             <input
-                type=
-                    "text"
-                placeholder=
-                    "Search treatments or patients..."
+                type="text"
+                placeholder="Search treatments or patients..."
                 value={searchTerm}
                 onChange={handleSearchChange}
                 style={{
@@ -125,7 +130,6 @@ export default function Treatments() {
                 value={filterStatus}
                 onChange={handleFilterChange}
                 style={{padding: "8px", marginBottom: "20px"}}
-
             >
                 <option value="All">All</option>
                 <option value="Active">Active</option>
@@ -167,11 +171,36 @@ export default function Treatments() {
                             <Typography>
                                 <strong>Notes:</strong> {t.notes ?? "None"}
                             </Typography>
+
+                            <Box sx={{ mt: 2, mb: 1 }}>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                                    <Typography variant="body2" color="text.secondary">
+                                        Progress
+                                    </Typography>
+                                    <Typography variant="body2" color="text.secondary">
+                                        {Math.round(t.progressPercentage || 0)}%
+                                    </Typography>
+                                </Box>
+                                <LinearProgress
+                                    variant="determinate"
+                                    value={t.progressPercentage || 0}
+                                    sx={{
+                                        height: 10,
+                                        borderRadius: 5,
+                                        backgroundColor: '#e0e0e0',
+                                        '& .MuiLinearProgress-bar': {
+                                            backgroundColor: getProgressColor(t.progressPercentage || 0),
+                                            borderRadius: 5,
+                                        }
+                                    }}
+                                />
+                            </Box>
+
                             <Button
                                 variant="outlined"
                                 size="small"
                                 onClick={() => handleEdit(t)}
-                                sx={{mt: 1}}
+                                sx={{mt: 1, mr: 1}}
                             >
                                 Edit
                             </Button>
@@ -190,6 +219,7 @@ export default function Treatments() {
                     </Card>
                 ))}
             </div>
+
             <Dialog open={editOpen} onClose={() => setEditOpen(false)}>
                 <DialogTitle>Edit Treatment</DialogTitle>
                 <DialogContent sx={{display: "flex", flexDirection: "column", gap: 2}}>
@@ -265,21 +295,20 @@ export default function Treatments() {
                     <Button variant="contained" onClick={handleEditSave}>Save</Button>
                 </DialogActions>
             </Dialog>
+
             <div style={{
-                display: "flex"
-                , justifyContent: "center"
-                , marginTop: "20px"
-            }}><Pagination
+                display: "flex",
+                justifyContent: "center",
+                marginTop: "20px"
+            }}>
+                <Pagination
                     count={totalPages}
                     page={page + 1}
                     onChange={(event, value) => setPage(value - 1)}
                     color="primary"
                     size="large"
                 />
-
             </div>
-            </div>
-
-            );
-
-            };
+        </div>
+    );
+}
