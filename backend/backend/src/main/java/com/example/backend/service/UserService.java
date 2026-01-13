@@ -18,7 +18,6 @@ private UserRepository userRepository;
         this.userRepository = userRepository;
     }
 
-
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -34,9 +33,4 @@ private UserRepository userRepository;
     public void deleteUserById(String id) {
         userRepository.deleteById(id);
     }
-
-
-
-
-
 }

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API = 'http://192.168.100.117:8080';
+const API = 'http://192.168.1.129:8080';
 
 const apiClient = axios.create({
     baseURL: API,
@@ -30,4 +30,14 @@ export const getTreatmentProgress = (treatmentId) => {
     return apiClient.get(`/api/treatment/${treatmentId}/progress`);
 };
 
+export const getCurrentUserInfo = (userId) => {
+    return apiClient.get(`/api/users/${userId}/details`);
+};
+
+export const updateUserInfo = (userId, data) => {
+    return apiClient.put(`/api/users/${userId}/details`, data);
+};
+export const changePassword = (data) => {
+    return apiClient.post('/api/users/${userId}/change-password', data);
+};
 export default apiClient;
