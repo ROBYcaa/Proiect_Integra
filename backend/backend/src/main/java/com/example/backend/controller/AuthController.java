@@ -76,33 +76,6 @@ public class AuthController {
         ));
     }
 
-//    @PostMapping("/register")
-//    public ResponseEntity<?> register(@RequestBody Map<String, String> registerData) {
-//        String email = registerData.get("email");
-//        String password = registerData.get("password");
-//        String name = registerData.get("name");
-//
-//        if (userService.getUserByEmail(email).isPresent()) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-//                    .body("Email deja folosit");
-//        }
-//
-//        User newUser = new User();
-//        newUser.setEmail(email);
-//        newUser.setPassword(password);
-//        newUser.setRole("patient");
-//
-//        User savedUser = userService.createUser(newUser);
-//
-//        return ResponseEntity.status(HttpStatus.CREATED)
-//                .body(Map.of(
-//                        "message", "Pacient înregistrat cu succes",
-//                        "userId", savedUser.getId(),
-//                        "email", savedUser.getEmail(),
-//                        "role", savedUser.getRole()
-//                ));
-//    }
-
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
