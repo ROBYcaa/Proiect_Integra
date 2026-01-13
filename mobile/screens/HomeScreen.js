@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications';
+
+useEffect(() => {
+    Notifications.scheduleNotificationAsync({
+        content: {
+            title: '💊 Treatment reminder',
+            body: 'Check today’s treatments and don’t forget your doses!',
+        },
+        trigger: null,
+    });
+}, []);
 
 export default function HomeScreen() {
     const [userEmail, setUserEmail] = useState('');

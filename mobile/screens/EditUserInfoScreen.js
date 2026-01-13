@@ -16,6 +16,8 @@ export default function EditUserInfoScreen({ navigation }) {
         sex: '',
         height: '',
         weight: '',
+        dateOfBirth: '',
+        extraInfo: '',
     });
 
     const loadUserInfo = async () => {
@@ -32,6 +34,9 @@ export default function EditUserInfoScreen({ navigation }) {
                 sex: data.sex || '',
                 height: String(data.height || ''),
                 weight: String(data.weight || ''),
+                dateOfBirth: data.dateOfBirth ? new Date(form.dateOfBirth): '',
+                extraInfo: data.extraInfo || '',
+
             });
         } catch (error) {
             console.log('Error loading user info:', error);
@@ -51,6 +56,8 @@ export default function EditUserInfoScreen({ navigation }) {
                 ...form,
                 height: Number(form.height),
                 weight: Number(form.weight),
+                dateOfBirth: form.dateOfBirth ? new Date(form.dateOfBirth) : null,
+                extraInfo: form.extraInfo,
             });
 
             navigation.goBack();
@@ -81,11 +88,33 @@ export default function EditUserInfoScreen({ navigation }) {
                 onChangeText={(v) => updateField('lastName', v)}
             />
 
+            <View style={styles.genderRow}>
+                <TouchableOpacity
+                    style={[
+                        styles.genderButton,
+                        form.sex === 'male' && styles.genderSelected
+                    ]}
+                    onPress={() => updateField('sex', 'male')}
+                >
+                    <Text>Male</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={[
+                        styles.genderButton,
+                        form.sex === 'female' && styles.genderSelected
+                    ]}
+                    onPress={() => updateField('sex', 'female')}
+                >
+                    <Text>Female</Text>
+                </TouchableOpacity>
+            </View>
+
             <TextInput
                 style={styles.input}
-                placeholder="Sex"
-                value={form.sex}
-                onChangeText={(v) => updateField('sex', v)}
+                placeholder="Date of Birth (YYYY-MM-DD)"
+                value={form.dateOfBirth}
+                onChangeText={(v) => updateField('dateOfBirth', v)}
             />
 
             <TextInput
@@ -102,6 +131,15 @@ export default function EditUserInfoScreen({ navigation }) {
                 keyboardType="numeric"
                 value={form.weight}
                 onChangeText={(v) => updateField('weight', v)}
+            />
+
+            <TextInput
+                style={styles.input}
+                placeholder="Extra Info"
+                value={form.extraInfo}
+                onChangeText={(v) => updateField('extraInfo', v)}
+                multiline
+                numberOfLines={3}
             />
 
             <TouchableOpacity style={styles.button} onPress={handleSave}>
@@ -128,6 +166,23 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         padding: 12,
         marginBottom: 10,
+    },
+    genderRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 10,
+    },
+    genderButton: {
+        flex: 1,
+        padding: 12,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        alignItems: 'center',
+        marginHorizontal: 5,
+        borderRadius: 8,
+    },
+    genderSelected: {
+        backgroundColor: '#ddd',
     },
     button: {
         backgroundColor: '#007AFF',
