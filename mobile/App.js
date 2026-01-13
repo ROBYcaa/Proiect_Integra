@@ -1,12 +1,9 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { enableScreens } from 'react-native-screens';
 import TabNavigator from './navigation/TabNavigator';
 import * as Notifications from 'expo-notifications';
-import { Platform } from 'react-native';
-import { useEffect } from 'react';
-
 
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
@@ -26,13 +23,13 @@ Notifications.setNotificationHandler({
 export default function App() {
     useEffect(() => {
         (async () => {
-            if (Platform.OS === 'android') {
+            if (Platform.OS ===
+                'android') {
                 await Notifications.setNotificationChannelAsync('default', {
-                    name: 'default',
-                    importance: Notifications.AndroidImportance.MAX,
-                });
+                        name: 'default',
+                        importance: Notifications.AndroidImportance.MAX,
+                    });
             }
-
             await Notifications.requestPermissionsAsync();
         })();
     }, []);
