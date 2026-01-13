@@ -45,5 +45,4 @@ public class UserDetailService {
     public Optional<UserDetail> getByUserId(String userId) {
         return userDetailRepository.findByUserId(userId);
     }
-
 }

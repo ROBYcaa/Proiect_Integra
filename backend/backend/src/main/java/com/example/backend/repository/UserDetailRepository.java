@@ -9,11 +9,4 @@ import java.util.Optional;
 public interface UserDetailRepository extends MongoRepository<UserDetail, String> {
     Optional<UserDetail> findByUserId(String userId);
     List<UserDetail> findByFirstNameContainingOrLastNameContaining(String firstName, String lastName);
-    Optional<UserDetail> findUserDetailsByUserId(String userId);
-    Optional<UserDetail> findUserDetailsByLastName(String lastName);
-
 }
-
-
-
-

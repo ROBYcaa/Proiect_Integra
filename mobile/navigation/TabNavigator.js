@@ -2,7 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from '../screens/HomeScreen';
-import SettingsScreen from '../screens/SettingsScreen';
+import SettingsStack from './SettingsStack';
 import CalendarScreen from '../screens/CalendarScreen';
 import PatientTreatmentsScreen from '../screens/PatientTreatmentsScreen'
 
@@ -28,7 +28,10 @@ export default function TabNavigator() {
             <Tab.Screen name="Home" component={HomeScreen} />
             <Tab.Screen name="Tratamente" component={PatientTreatmentsScreen} />
             <Tab.Screen name="Calendar" component={CalendarScreen} />
-            <Tab.Screen name="Settings" component={SettingsScreen} />
+            <Tab.Screen name="Settings"
+                        component={SettingsStack}
+                        options={{ headerShown:false }}
+            />
 
         </Tab.Navigator>
     );
