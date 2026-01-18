@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { getPatientTreatmentsByDate } from '../api/api';
 
-export default async function HomeScreen() {
+export default function HomeScreen() {
     const [userEmail, setUserEmail] = useState('');
 
     const loadUser = async () => {

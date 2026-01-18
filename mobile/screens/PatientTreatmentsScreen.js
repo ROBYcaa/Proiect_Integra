@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import {View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
-import { getPatientTreatments, getTreatmentProgress } from '../api/api';
+import {exportTreatmentsPdf, getPatientTreatments, getTreatmentProgress} from '../api/api';
+import * as Sharing from "expo-sharing";
 
 export default function PatientTreatmentsScreen() {
     const [treatments, setTreatments] = useState([]);
@@ -44,6 +45,41 @@ export default function PatientTreatmentsScreen() {
             console.error('Error loading treatments:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleExportPdf = async () => {
+        try {
+            const patientId = await AsyncStorage.getItem("currentUserId");
+            if (treatments.length === 0) return;
+
+            const exportDto = {
+                patientId,
+                startDate: startDate.toISOString(),
+                endDate: endDate.toISOString(),
+                treatmentIds: treatments.map((t) => t.id),
+            };
+
+            const response = await exportTreatmentsPdf(exportDto);
+
+            // Convert ArrayBuffer → Base64 (React Native)
+            const base64 = btoa(
+                new Uint8Array(response.data)
+                    .reduce((data, byte) => data + String.fromCharCode(byte), '')
+            );
+
+            const fileUri = FileSystem.documentDirectory + "prescriptions.pdf";
+
+            await FileSystem.writeAsStringAsync(fileUri, base64, {
+                encoding: FileSystem.EncodingType.Base64,
+            });
+
+            if (await Sharing.isAvailableAsync()) {
+                await Sharing.shareAsync(fileUri);
+            }
+
+        } catch (e) {
+            console.error("Export PDF failed:", e);
         }
     };
 
@@ -110,11 +146,25 @@ export default function PatientTreatmentsScreen() {
                     <Text style={styles.emptyText}>No treatments found</Text>
                 }
             />
+            <TouchableOpacity style={styles.floatingButton}
+                              onPress={handleExportPdf}/>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
+    floatingButton: {
+        position: "absolute",
+        bottom: 30,
+        right: 30,
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        backgroundColor: "#0066cc",
+        justifyContent: "center",
+        alignItems: "center",
+        elevation: 8,
+    },
     container: {
         flex: 1,
         padding: 20,

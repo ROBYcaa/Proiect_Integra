@@ -27,7 +27,7 @@ export const markTreatmentIntake = (intakeData) => {
 };
 
 export const getTreatmentProgress = (treatmentId) => {
-    return apiClient.get(`/api/treatment/${treatmentId}/progress`);
+    return apiClient.get(`/api/treatments/${treatmentId}/progress`);
 };
 
 export const getCurrentUserInfo = (userId) => {
@@ -39,5 +39,13 @@ export const updateUserInfo = (userId, data) => {
 };
 export const changePassword = (data) => {
     return apiClient.post('/api/users/${userId}/change-password', data);
+};
+export const exportTreatmentsPdf = async (exportDto) => {
+    return apiClient.post('api/treatments/export',
+        exportDto,
+        {
+            responseType: "arraybuffer",
+        }
+    );
 };
 export default apiClient;
