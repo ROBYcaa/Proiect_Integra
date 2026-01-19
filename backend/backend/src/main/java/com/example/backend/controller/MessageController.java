@@ -26,4 +26,8 @@ public class MessageController {
     public Message sendMessage(@RequestBody Message message) {
         return messageService.saveMessage(message);
     }
+
+    @GetMapping("/history")
+    public List<Message> getChatHistory(@RequestParam String userId1, @RequestParam String userId2) {
+        return messageService.getChatHistory(userId1, userId2);}
 }

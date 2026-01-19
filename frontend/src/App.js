@@ -6,6 +6,7 @@ import NavBar from "./components/NavBar";
 import PrescriptionForm from "./components/prescriptionform/PrescriptionForm";
 import Treatments from "./components/treatments/Treatments";
 import Export from "./components/export/Export";
+import Chat from "./components/chat/Chat";
 
 
 function App() {
@@ -46,7 +47,7 @@ function App() {
                 <Route path="/prescribe" element={<PrescriptionForm />} />
                 <Route path="/treatments" element={<Treatments />} />
                 <Route path="/export" element={<Export />} />
-
+                <Route path="/chat/:otherUserId" element={<Chat />} />
 
             </Routes>
         </BrowserRouter>

@@ -75,3 +75,9 @@ export const createExport = async (exportBody) => {
         throw error;
     }
 };
+export const getChatHistory = async (userId1, userId2) => {
+    const { data } = await axiosInstance.get(
+        `/messages/history?userId1=${userId1}&userId2=${userId2}`
+    );
+    return data;
+};

@@ -13,11 +13,11 @@ public class Message {
     private String receiverId;
     private String text;
     private LocalDateTime timestamp;
-    private boolean read;
+    private Boolean read;
 
     public Message() { }
 
-    public Message(String senderId, String receiverId, String text, LocalDateTime timestamp, boolean read) {
+    public Message(String senderId, String receiverId, String text, LocalDateTime timestamp, Boolean read) {
         this.senderId = senderId;
         this.receiverId = receiverId;
         this.text = text;
@@ -53,10 +53,10 @@ public class Message {
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
-    public boolean isRead() {
+    public Boolean isRead() {
         return read;
     }
-    public void setRead(boolean read) {
+    public void setRead(Boolean read) {
         this.read = read;
     }
 }
