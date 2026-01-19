@@ -4,21 +4,33 @@ import "./Dashboard.css";
 import { useNavigate } from "react-router-dom";
 import { getTreatments } from "../../api/api";
 
-function PatientDetails({ patient, handlePrescribe  }) {
+function PatientDetails({ patient, handlePrescribe }) {
+    const navigate = useNavigate();
 
     return (
         <div className="patient-details">
             <h3>{patient.lastName} {patient.firstName}</h3>
+
             <p>Height: {patient.height}</p>
             <p>Weight: {patient.weight}</p>
             <p>Date of Birth: {new Date(patient.dateOfBirth).toLocaleDateString()}</p>
             <p>Sex: {patient.sex}</p>
             <p>Extra info: {patient.extrainfo}</p>
+
             <button
                 className="treatment-button"
                 onClick={() => handlePrescribe(patient.id)}
             >
                 Vezi tratamente
+            </button>
+            <button
+                className="chat-button"
+                onClick={() => navigate(
+                    `/chat/${patient.id}`,
+                    {state: {otherUserName: `${patient.lastName} ${patient.firstName}`}}
+                )}
+            >
+                Chat
             </button>
         </div>
     );
