@@ -13,6 +13,9 @@ function PatientDetails({ patient, handlePrescribe }) {
 
             <p>Height: {patient.height}</p>
             <p>Weight: {patient.weight}</p>
+            <p>Date of Birth: {new Date(patient.dateOfBirth).toLocaleDateString()}</p>
+            <p>Sex: {patient.sex}</p>
+            <p>Extra info: {patient.extrainfo}</p>
 
             <button
                 className="treatment-button"
@@ -24,7 +27,7 @@ function PatientDetails({ patient, handlePrescribe }) {
                 className="chat-button"
                 onClick={() => navigate(
                     `/chat/${patient.id}`,
-                    { state: { otherUserName: `${patient.lastName} ${patient.firstName}` } }
+                    {state: {otherUserName: `${patient.lastName} ${patient.firstName}`}}
                 )}
             >
                 Chat
