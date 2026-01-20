@@ -4,7 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from '../screens/HomeScreen';
 import SettingsStack from './SettingsStack';
 import CalendarScreen from '../screens/CalendarScreen';
-import PatientTreatmentsScreen from '../screens/PatientTreatmentsScreen'
+import PatientTreatmentsScreen from '../screens/PatientTreatmentsScreen';
+import ChatScreen from '../screens/ChatScreen';
 
 const Tab = createBottomTabNavigator();
 export default function TabNavigator() {
@@ -13,11 +14,17 @@ export default function TabNavigator() {
             screenOptions={({ route }) => ({
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
+
                     if (route.name === 'Home') {
                         iconName = focused ? 'home' : 'home-outline';
+                    } else if (route.name === 'Chat') {
+                        iconName = focused ? 'chatbubble' : 'chatbubble-outline';
+                    } else if (route.name === 'Calendar') {
+                        iconName = focused ? 'calendar' : 'calendar-outline';
                     } else if (route.name === 'Settings') {
                         iconName = focused ? 'settings' : 'settings-outline';
                     }
+
                     return <Ionicons name={iconName} size={size} color={color} />;
                 },
                 tabBarActiveTintColor: '#007AFF',
@@ -27,12 +34,13 @@ export default function TabNavigator() {
         >
             <Tab.Screen name="Home" component={HomeScreen} />
             <Tab.Screen name="Tratamente" component={PatientTreatmentsScreen} />
+            <Tab.Screen name="Chat" component={ChatScreen} />
             <Tab.Screen name="Calendar" component={CalendarScreen} />
-            <Tab.Screen name="Settings"
-                        component={SettingsStack}
-                        options={{ headerShown:false }}
+            <Tab.Screen
+                name="Settings"
+                component={SettingsStack}
+                options={{ headerShown: false }}
             />
-
         </Tab.Navigator>
     );
 }
