@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { connectWebSocket, sendMessageWS } from "../api/websocket";
+import { getChatHistory } from "../api/api";
 
 export default function ChatScreen() {
     const otherUserId = "doctor1";
@@ -21,6 +22,13 @@ export default function ChatScreen() {
         const init = async () => {
             const userId = await AsyncStorage.getItem("currentUserId");
             setCurrentUserId(userId);
+
+            try {
+                const response = await getChatHistory(userId, otherUserId);
+                setMessages(response.data);
+            } catch (error) {
+                console.log("Error loading chat history", error);
+            }
 
             connectWebSocket((message) => {
                 setMessages((prev) => [...prev, message]);
@@ -54,12 +62,23 @@ export default function ChatScreen() {
                 ]}
             >
                 <Text style={styles.messageText}>{item.text}</Text>
+
+                {item.timestamp && (
+                    <Text style={styles.timeText}>
+                        {new Date(item.timestamp).toLocaleString()}
+                    </Text>
+                )}
             </View>
         );
     };
 
+
     return (
+
         <View style={styles.container}>
+            <Text style={styles.header}>
+                Chat cu {otherUserId}
+            </Text>
             <FlatList
                 data={messages}
                 keyExtractor={(_, index) => index.toString()}
@@ -73,13 +92,17 @@ export default function ChatScreen() {
                     onChangeText={setText}
                     placeholder="Scrie mesaj..."
                 />
-                <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
+                <TouchableOpacity
+                    style={styles.sendButton}
+                    onPress={handleSend}
+                >
                     <Text style={styles.sendText}>Send</Text>
                 </TouchableOpacity>
             </View>
         </View>
     );
 }
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -123,4 +146,17 @@ const styles = StyleSheet.create({
     sendText: {
         color: "#fff",
     },
+    timeText: {
+        fontSize: 11,
+        color: "#555",
+        alignSelf: "flex-end",
+        marginTop: 4,
+    },
+    header: {
+        fontSize: 18,
+        fontWeight: "bold",
+        textAlign: "center",
+        marginBottom: 10,
+    },
+
 });
