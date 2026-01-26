@@ -11,8 +11,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { connectWebSocket, sendMessageWS } from "../api/websocket";
 import { getChatHistory } from "../api/api";
 
-export default function ChatScreen() {
-    const otherUserId = "doctor1";
+export default function ChatScreen({ route }) {
+    const { otherUserId, otherUserName } = route.params;
 
     const [currentUserId, setCurrentUserId] = useState(null);
     const [messages, setMessages] = useState([]);
@@ -31,12 +31,19 @@ export default function ChatScreen() {
             }
 
             connectWebSocket((message) => {
-                setMessages((prev) => [...prev, message]);
+                if (
+                    (message.senderId === otherUserId &&
+                        message.receiverId === userId) ||
+                    (message.senderId === userId &&
+                        message.receiverId === otherUserId)
+                ) {
+                    setMessages((prev) => [...prev, message]);
+                }
             });
         };
 
         init();
-    }, []);
+    }, [otherUserId]);
 
     const handleSend = () => {
         if (!text.trim() || !currentUserId) return;
@@ -44,7 +51,7 @@ export default function ChatScreen() {
         const message = {
             senderId: currentUserId,
             receiverId: otherUserId,
-            text: text,
+            text,
         };
 
         sendMessageWS(message);
@@ -62,10 +69,9 @@ export default function ChatScreen() {
                 ]}
             >
                 <Text style={styles.messageText}>{item.text}</Text>
-
                 {item.timestamp && (
                     <Text style={styles.timeText}>
-                        {new Date(item.timestamp).toLocaleString()}
+                        {new Date(item.timestamp).toLocaleTimeString()}
                     </Text>
                 )}
             </View>
@@ -74,11 +80,11 @@ export default function ChatScreen() {
 
 
     return (
-
         <View style={styles.container}>
             <Text style={styles.header}>
-                Chat cu {otherUserId}
+                Chat cu {otherUserName}
             </Text>
+
             <FlatList
                 data={messages}
                 keyExtractor={(_, index) => index.toString()}

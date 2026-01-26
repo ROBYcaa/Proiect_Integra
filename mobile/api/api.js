@@ -51,5 +51,8 @@ export const exportTreatmentsPdf = async (exportDto) => {
 export const getChatHistory = (userId1, userId2) => {
     return apiClient.get(`/api/messages/history`, { params: { userId1, userId2 } });
 };
+export const getUserConversations = (userId) => {
+    return apiClient.get(`/api/messages/conversations/${userId}`);
+};
 
 export default apiClient;

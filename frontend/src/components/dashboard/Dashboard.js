@@ -26,7 +26,7 @@ function PatientDetails({ patient, handlePrescribe }) {
             <button
                 className="chat-button"
                 onClick={() => navigate(
-                    `/chat/${patient.id}`,
+                    `/chat/${patient.userId}`,
                     {state: {otherUserName: `${patient.lastName} ${patient.firstName}`}}
                 )}
             >

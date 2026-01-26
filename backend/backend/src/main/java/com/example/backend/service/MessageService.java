@@ -1,19 +1,72 @@
 package com.example.backend.service;
 
+import com.example.backend.dto.ConversationDTO;
 import com.example.backend.model.Message;
 import com.example.backend.repository.MessageRepository;
+import com.example.backend.repository.UserDetailRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.example.backend.model.UserDetail;
 
+
+import java.util.*;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
 
 @Service
 public class MessageService {
 
     @Autowired
-    private MessageRepository messageRepository;
+    private final MessageRepository messageRepository;
+    private final UserDetailRepository userDetailRepository;
+
+    public MessageService(MessageRepository messageRepository,
+                          UserDetailRepository userDetailRepository) {
+        this.messageRepository = messageRepository;
+        this.userDetailRepository = userDetailRepository;
+    }
+
+    public List<ConversationDTO> getUserConversations(String userId) {
+
+        List<Message> messages =
+                messageRepository.findBySenderIdOrReceiverIdOrderByTimestampDesc(userId, userId);
+
+        Map<String, Message> conversationMap = new LinkedHashMap<>();
+
+        for (Message message : messages) {
+            String otherUserId =
+                    message.getSenderId().equals(userId)
+                            ? message.getReceiverId()
+                            : message.getSenderId();
+
+            conversationMap.putIfAbsent(otherUserId, message);
+        }
+
+        List<ConversationDTO> conversations = new ArrayList<>();
+
+        for (Map.Entry<String, Message> entry : conversationMap.entrySet()) {
+            String otherUserId = entry.getKey();
+            Message lastMessage = entry.getValue();
+
+            Optional<UserDetail> userDetail =
+                    userDetailRepository.findByUserId(otherUserId);
+
+            String fullName = userDetail
+                    .map(u -> u.getFirstName() + " " + u.getLastName())
+                    .orElse("Unknown User");
+
+            conversations.add(
+                    new ConversationDTO(
+                            otherUserId,
+                            fullName,
+                            lastMessage.getText(),
+                            lastMessage.getTimestamp(),
+                            lastMessage.isRead()
+                    )
+            );
+        }
+
+        return conversations;
+    }
 
     public Message saveMessage(Message message) {
         message.setTimestamp(LocalDateTime.now());
