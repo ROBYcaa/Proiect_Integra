@@ -9,7 +9,7 @@ export const connectWebSocket = (onMessageReceived) => {
     }
 
     stompClient = new Client({
-        webSocketFactory: () => new SockJS("http://10.3.0.179:8080/chat"),
+        webSocketFactory: () => new SockJS("http://192.168.1.129:8080/chat"),
         reconnectDelay: 5000,
 
         onConnect: () => {

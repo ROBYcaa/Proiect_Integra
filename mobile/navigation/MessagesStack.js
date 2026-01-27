@@ -9,7 +9,7 @@ export default function MessagesStack() {
     return (
         <Stack.Navigator>
             <Stack.Screen
-                name="Messages"
+                name="MessagesList"
                 component={MessagesScreen}
                 options={{ title: "Mesaje" }}
             />
