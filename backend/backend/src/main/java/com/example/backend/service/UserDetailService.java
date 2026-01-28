@@ -1,7 +1,9 @@
 package com.example.backend.service;
 
+import com.example.backend.model.User;
 import com.example.backend.model.UserDetail;
 import com.example.backend.repository.UserDetailRepository;
+import com.example.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,8 @@ public class UserDetailService {
 
     @Autowired
     private UserDetailRepository userDetailRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     public UserDetailService(UserDetailRepository userDetailRepository) {
         this.userDetailRepository = userDetailRepository;
@@ -44,5 +48,18 @@ public class UserDetailService {
 
     public Optional<UserDetail> getByUserId(String userId) {
         return userDetailRepository.findByUserId(userId);
+    }
+
+    public List<UserDetail> findDoctors() {
+        List<User> doctors = userRepository.findAll()
+                .stream()
+                .filter(user -> "doctor".equalsIgnoreCase(user.getRole()))
+                .toList();
+
+        List<String> doctorIds = doctors.stream()
+                .map(User::getId)
+                .toList();
+
+        return userDetailRepository.findAllByUserIdIn(doctorIds);
     }
 }

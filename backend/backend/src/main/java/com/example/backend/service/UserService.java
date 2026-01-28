@@ -38,8 +38,4 @@ private final UserRepository userRepository;
     public void deleteUserById(String id) {
         userRepository.deleteById(id);
     }
-
-    public List<User> findDoctors() {
-        return userRepository.findByRole("doctor");
-    }
 }

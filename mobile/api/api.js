@@ -55,6 +55,6 @@ export const getUserConversations = (userId) => {
     return apiClient.get(`/api/messages/conversations/${userId}`);
 };
 export const getDoctors = () => {
-    return apiClient.get("/api/users/doctors");
+    return apiClient.get(`/api/userdetails/doctors`);
 };
 export default apiClient;
