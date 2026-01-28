@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import com.example.backend.dto.ConversationDTO;
 import com.example.backend.model.Message;
 import com.example.backend.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,5 +30,12 @@ public class MessageController {
 
     @GetMapping("/history")
     public List<Message> getChatHistory(@RequestParam String userId1, @RequestParam String userId2) {
-        return messageService.getChatHistory(userId1, userId2);}
+        return messageService.getChatHistory(userId1, userId2);
+    }
+
+    @GetMapping("/conversations/{userId}")
+    public List<ConversationDTO> getConversations(@PathVariable String userId) {
+        return messageService.getUserConversations(userId);
+    }
+
 }

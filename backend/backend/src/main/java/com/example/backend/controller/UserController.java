@@ -103,4 +103,9 @@ public class UserController {
 
         return ResponseEntity.ok("Password changed successfully");
     }
+
+    @GetMapping("/doctors")
+    public List<User> getDoctors() {
+        return userService.findDoctors();
+    }
 }

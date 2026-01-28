@@ -4,9 +4,12 @@ import SockJS from "sockjs-client";
 let stompClient = null;
 
 export const connectWebSocket = (onMessageReceived) => {
+    if (stompClient && stompClient.active) {
+        return;
+    }
+
     stompClient = new Client({
-        webSocketFactory: () =>
-            new SockJS("http://localhost:8080/chat"),
+        webSocketFactory: () => new SockJS("http://192.168.1.129:8080/chat"),
         reconnectDelay: 5000,
 
         onConnect: () => {
@@ -20,6 +23,13 @@ export const connectWebSocket = (onMessageReceived) => {
     });
 
     stompClient.activate();
+};
+
+export const disconnectWebSocket = () => {
+    if (stompClient) {
+        stompClient.deactivate();
+        stompClient = null;
+    }
 };
 
 export const sendMessageWS = (message) => {

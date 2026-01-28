@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { getChatHistory } from "../../api/api";
-import { connectWebSocket, sendMessageWS } from "../../api/websocket";
+import { connectWebSocket, sendMessageWS, disconnectWebSocket } from "../../api/websocket";
 import "./Chat.css";
 
 function Chat() {
@@ -12,6 +12,16 @@ function Chat() {
     const routerLocation = useLocation();
 
     const otherUserName = routerLocation.state?.otherUserName || "User";
+    const messagesEndRef = useRef(null);
+    const otherUserIdRef = useRef(null);
+
+    useEffect(() => {
+        otherUserIdRef.current = otherUserId;
+    }, [otherUserId]);
+
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [messages]);
 
     useEffect(() => {
         const userId = localStorage.getItem("currentUserId");
@@ -19,27 +29,41 @@ function Chat() {
     }, []);
 
     useEffect(() => {
-        if (!currentUserId || !otherUserId) return;
-
-        const loadHistory = async () => {
-            const history = await getChatHistory(currentUserId, otherUserId);
-            setMessages(history);
-        };
-
-        loadHistory();
+        if (!currentUserId) return;
 
         connectWebSocket((newMessage) => {
+            const otherId = otherUserIdRef.current;
+
             if (
                 (newMessage.senderId === currentUserId &&
-                    newMessage.receiverId === otherUserId) ||
-                (newMessage.senderId === otherUserId &&
+                    newMessage.receiverId === otherId) ||
+                (newMessage.senderId === otherId &&
                     newMessage.receiverId === currentUserId)
             ) {
                 setMessages(prev => [...prev, newMessage]);
             }
         });
 
+        return () => {
+            disconnectWebSocket();
+        };
+    }, [currentUserId]);
+
+
+
+    useEffect(() => {
+        if (!currentUserId || !otherUserId) return;
+
+        const loadHistory = async () => {
+            const history = await getChatHistory(currentUserId, otherUserId);
+            console.log(currentUserId,otherUserId)
+            setMessages(history);
+            console.log(history)
+        };
+
+        loadHistory();
     }, [currentUserId, otherUserId]);
+
 
     const handleSend = () => {
         if (text.trim() === "") return;
@@ -60,18 +84,23 @@ function Chat() {
             </div>
 
             <div className="chat-messages">
-                {messages.map((msg) => (
+                {messages.map((msg, index) => (
                     <div
-                        key={msg.id || Math.random()}
+                        key={msg.id || index}
                         className={
                             msg.senderId === currentUserId
                                 ? "message own"
                                 : "message other"
                         }
                     >
-                        {msg.text}
+                        <div>{msg.text}</div>
+                        <div className="message-time">
+                            {new Date(msg.timestamp).toLocaleTimeString()}
+                        </div>
                     </div>
                 ))}
+                <div ref={messagesEndRef}/>
+
             </div>
 
             <div className="chat-input">
@@ -79,6 +108,7 @@ function Chat() {
                     type="text"
                     value={text}
                     onChange={(e) => setText(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSend()}
                     placeholder="Scrie mesaj..."
                 />
                 <button onClick={handleSend}>Trimite</button>
