@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import com.example.backend.model.User;
 import com.example.backend.model.UserDetail;
 import com.example.backend.service.UserDetailService;
 import org.springframework.web.bind.annotation.*;
@@ -45,5 +46,10 @@ public class UserDetailController {
     @GetMapping("/search")
     public List<UserDetail> searchPatients(@RequestParam String name) {
         return userDetailService.searchPatients(name);
+    }
+
+    @GetMapping("/doctors")
+    public List<UserDetail> getDoctors() {
+        return userDetailService.findDoctors();
     }
 }
