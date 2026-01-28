@@ -33,21 +33,22 @@ export default function MessagesScreen({ navigation }) {
 
     const startChatWithDoctor = (doctor) => {
         setModalVisible(false);
+        console.log("MessageScreen" + doctor.id)
         navigation.navigate("Chat", {
-            otherUserId: doctor.userId,
-            otherUserName: `${doctor.firstName} ${doctor.lastName}`,
+            otherUserId: doctor.id,
+            otherUserName: doctor.firstName + " " + doctor.lastName
         });
     };
 
     const renderConversation = ({ item }) => (
         <TouchableOpacity
             style={styles.conversation}
-            onPress={() =>
+            onPress={() =>{
                 navigation.navigate("Chat", {
-                    otherUserId: item.otherUserId,
+                    otherUserId: item.conversationUserId,
                     otherUserName: item.fullName,
                 })
-            }
+            }}
         >
             <Text style={styles.name}>{item.fullName}</Text>
             <Text style={styles.lastMessage}>{item.lastMessage}</Text>
@@ -60,7 +61,7 @@ export default function MessagesScreen({ navigation }) {
             onPress={() => startChatWithDoctor(item)}
         >
             <Text style={styles.name}>
-                {item.firstName} {item.lastName}
+                {item.firstName +" " + item.lastName}
             </Text>
         </TouchableOpacity>
     );
@@ -70,7 +71,7 @@ export default function MessagesScreen({ navigation }) {
             <FlatList
                 data={conversations}
                 keyExtractor={(item, index) =>
-                    item.otherUserId ? item.otherUserId : index.toString()
+                    item.conversationUserId ? item.conversationUserId : index.toString()
                 }
                 renderItem={renderConversation}
             />
@@ -88,7 +89,7 @@ export default function MessagesScreen({ navigation }) {
 
                     <FlatList
                         data={doctors}
-                        keyExtractor={(item) => item.userId}
+                        keyExtractor={(item) => item.id}
                         renderItem={renderDoctor}
                     />
 

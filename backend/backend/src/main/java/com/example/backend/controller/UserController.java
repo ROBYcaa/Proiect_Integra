@@ -105,7 +105,7 @@ public class UserController {
     }
 
     @GetMapping("/doctors")
-    public List<UserDetail> getDoctors() {
+    public List<User> getDoctors() {
         return userService.findDoctors();
     }
 }

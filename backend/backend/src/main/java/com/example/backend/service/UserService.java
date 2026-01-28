@@ -39,18 +39,7 @@ private final UserRepository userRepository;
         userRepository.deleteById(id);
     }
 
-    public List<UserDetail> findDoctors() {
-        List<User> doctors = userRepository.findAll()
-                .stream()
-                .filter(user -> "doctor".equalsIgnoreCase(user.getRole()))
-                .toList();
-
-        List<String> doctorIds = doctors.stream()
-                .map(User::getId)
-                .toList();
-
-        return userDetailRepository.findAllByUserIdIn(doctorIds);
+    public List<User> findDoctors() {
+        return userRepository.findByRole("doctor");
     }
-
-
 }
