@@ -3,6 +3,9 @@ import { useParams, useLocation } from "react-router-dom";
 import { getChatHistory } from "../../api/api";
 import { connectWebSocket, sendMessageWS, disconnectWebSocket } from "../../api/websocket";
 import "./Chat.css";
+import { sendReadWS } from "../../api/websocket";
+import { markMessagesAsRead } from "../../api/api";
+
 
 function Chat() {
     const { otherUserId } = useParams();
@@ -31,23 +34,36 @@ function Chat() {
     useEffect(() => {
         if (!currentUserId) return;
 
-        connectWebSocket((newMessage) => {
-            const otherId = otherUserIdRef.current;
-
-            if (
-                (newMessage.senderId === currentUserId &&
-                    newMessage.receiverId === otherId) ||
-                (newMessage.senderId === otherId &&
-                    newMessage.receiverId === currentUserId)
-            ) {
-                setMessages(prev => [...prev, newMessage]);
+        connectWebSocket(
+            (newMessage) => {
+                if (
+                    (newMessage.senderId === currentUserId &&
+                        newMessage.receiverId === otherUserId) ||
+                    (newMessage.senderId === otherUserId &&
+                        newMessage.receiverId === currentUserId)
+                ) {
+                    setMessages(prev => [...prev, newMessage]);
+                }
+            },
+            (readDto) => {
+                if (
+                    readDto.senderId === currentUserId &&
+                    readDto.receiverId === otherUserId
+                ) {
+                    setMessages(prev =>
+                        prev.map(m =>
+                            m.senderId === currentUserId
+                                ? { ...m, read: true }
+                                : m
+                        )
+                    );
+                }
             }
-        });
+        );
 
-        return () => {
-            disconnectWebSocket();
-        };
+        return disconnectWebSocket;
     }, [currentUserId]);
+
 
 
 
@@ -63,6 +79,14 @@ function Chat() {
 
         loadHistory();
     }, [currentUserId, otherUserId]);
+
+    useEffect(() => {
+        if (!currentUserId || !otherUserId) return;
+
+        markMessagesAsRead(otherUserId, currentUserId);
+        sendReadWS(otherUserId, currentUserId);
+    }, [currentUserId, otherUserId]);
+
 
 
     const handleSend = () => {
@@ -96,6 +120,11 @@ function Chat() {
                         <div>{msg.text}</div>
                         <div className="message-time">
                             {new Date(msg.timestamp).toLocaleTimeString()}
+                            {msg.senderId === currentUserId && (
+                                <span className="read-icon">
+                                    {msg.read ? " ✔✔" : " ✔"}
+                                </span>
+                            )}
                         </div>
                     </div>
                 ))}

@@ -5,7 +5,7 @@ let stompClient = null;
 
 const SOCKET_URL = "http://192.168.1.129:8080/chat";
 
-export const connectWebSocket = (onMessageReceived) => {
+export const connectWebSocket = (onMessageReceived, onReadReceived) => {
     stompClient = new Client({
         webSocketFactory: () => new SockJS(SOCKET_URL),
         reconnectDelay: 5000,
@@ -14,8 +14,11 @@ export const connectWebSocket = (onMessageReceived) => {
             console.log("WebSocket connected (mobile)");
 
             stompClient.subscribe("/topic/messages", (message) => {
-                const parsedMessage = JSON.parse(message.body);
-                onMessageReceived(parsedMessage);
+                onMessageReceived(JSON.parse(message.body));
+            });
+
+            stompClient.subscribe("/topic/read", (message) => {
+                onReadReceived(JSON.parse(message.body));
             });
         },
     });
@@ -31,3 +34,13 @@ export const sendMessageWS = (message) => {
         });
     }
 };
+
+export const sendReadWS = (senderId, receiverId) => {
+    if (stompClient && stompClient.connected) {
+        stompClient.publish({
+            destination: "/app/read",
+            body: JSON.stringify({ senderId, receiverId }),
+        });
+    }
+};
+
