@@ -57,4 +57,10 @@ export const getUserConversations = (userId) => {
 export const getDoctors = () => {
     return apiClient.get(`/api/userdetails/doctors`);
 };
+export const markMessagesAsRead = (senderId, receiverId) => {
+    return apiClient.post("/api/messages/read", {
+        senderId,
+        receiverId,
+    });
+};
 export default apiClient;

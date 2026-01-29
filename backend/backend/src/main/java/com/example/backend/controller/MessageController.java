@@ -1,6 +1,7 @@
 package com.example.backend.controller;
 
 import com.example.backend.dto.ConversationDTO;
+import com.example.backend.dto.ReadReceiptDTO;
 import com.example.backend.model.Message;
 import com.example.backend.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,4 +39,11 @@ public class MessageController {
         return messageService.getUserConversations(userId);
     }
 
+    @PostMapping("/read")
+    public void markAsRead(@RequestBody ReadReceiptDTO dto) {
+        messageService.markMessagesAsRead(
+                dto.senderId(),
+                dto.receiverId()
+        );
+    }
 }

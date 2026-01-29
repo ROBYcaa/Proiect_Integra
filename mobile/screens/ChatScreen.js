@@ -8,8 +8,8 @@ import {
     StyleSheet,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { connectWebSocket, sendMessageWS } from "../api/websocket";
-import { getChatHistory } from "../api/api";
+import { connectWebSocket, sendMessageWS, sendReadWS} from "../api/websocket";
+import { getChatHistory, markMessagesAsRead} from "../api/api";
 
 export default function ChatScreen({ route }) {
     const { otherUserId, otherUserName } = route.params;
@@ -30,20 +30,45 @@ export default function ChatScreen({ route }) {
                 console.log("Error loading chat history", error);
             }
 
-            connectWebSocket((message) => {
-                if (
-                    (message.senderId === otherUserId &&
-                        message.receiverId === userId) ||
-                    (message.senderId === userId &&
-                        message.receiverId === otherUserId)
-                ) {
-                    setMessages((prev) => [...prev, message]);
+            connectWebSocket(
+                (message) => {
+                    if (
+                        (message.senderId === otherUserId &&
+                            message.receiverId === userId) ||
+                        (message.senderId === userId &&
+                            message.receiverId === otherUserId)
+                    ) {
+                        setMessages(prev => [...prev, message]);
+                    }
+                },
+                (readDto) => {
+                    if (
+                        readDto.senderId === currentUserId &&
+                        readDto.receiverId === otherUserId
+                    ) {
+                        setMessages(prev =>
+                            prev.map(m =>
+                                m.senderId === currentUserId
+                                    ? { ...m, read: true }
+                                    : m
+                            )
+                        );
+                    }
                 }
-            });
+            );
+
         };
 
         init();
     }, [otherUserId]);
+
+    useEffect(() => {
+        if (!currentUserId || !otherUserId) return;
+
+        markMessagesAsRead(otherUserId, currentUserId);
+        sendReadWS(otherUserId, currentUserId);
+    }, [currentUserId, otherUserId]);
+
 
     const handleSend = () => {
         if (!text.trim() || !currentUserId) return;
@@ -72,6 +97,7 @@ export default function ChatScreen({ route }) {
                 {item.timestamp && (
                     <Text style={styles.timeText}>
                         {new Date(item.timestamp).toLocaleTimeString()}
+                        {isMine && (item.read ? " ✔✔" : " ✔")}
                     </Text>
                 )}
             </View>

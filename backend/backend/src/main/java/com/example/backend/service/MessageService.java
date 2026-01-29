@@ -1,13 +1,14 @@
 package com.example.backend.service;
 
 import com.example.backend.dto.ConversationDTO;
+import com.example.backend.dto.ReadReceiptDTO;
 import com.example.backend.model.Message;
 import com.example.backend.repository.MessageRepository;
 import com.example.backend.repository.UserDetailRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.backend.model.UserDetail;
-
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.*;
 import java.time.LocalDateTime;
@@ -18,6 +19,8 @@ public class MessageService {
     @Autowired
     private final MessageRepository messageRepository;
     private final UserDetailRepository userDetailRepository;
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     public MessageService(MessageRepository messageRepository,
                           UserDetailRepository userDetailRepository) {
@@ -84,5 +87,25 @@ public class MessageService {
                         Arrays.asList(userId1, userId2),
                         Arrays.asList(userId1, userId2)
                 );
+    }
+
+    public void markMessagesAsRead(String senderId, String receiverId) {
+
+        List<Message> unreadMessages =
+                messageRepository.findBySenderIdAndReceiverIdAndReadFalse(
+                        senderId,
+                        receiverId
+                );
+
+        if (unreadMessages.isEmpty()) {
+            return;
+        }
+
+        unreadMessages.forEach(message -> message.setRead(true));
+        messageRepository.saveAll(unreadMessages);
+
+        ReadReceiptDTO dto = new ReadReceiptDTO(senderId, receiverId);
+
+        messagingTemplate.convertAndSend("/topic/read", dto);
     }
 }

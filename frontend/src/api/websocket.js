@@ -3,10 +3,8 @@ import SockJS from "sockjs-client";
 
 let stompClient = null;
 
-export const connectWebSocket = (onMessageReceived) => {
-    if (stompClient && stompClient.active) {
-        return;
-    }
+export const connectWebSocket = (onMessageReceived, onReadReceived) => {
+    if (stompClient && stompClient.active) return;
 
     stompClient = new Client({
         webSocketFactory: () => new SockJS("http://192.168.1.129:8080/chat"),
@@ -16,8 +14,11 @@ export const connectWebSocket = (onMessageReceived) => {
             console.log("WebSocket connected");
 
             stompClient.subscribe("/topic/messages", (message) => {
-                const parsedMessage = JSON.parse(message.body);
-                onMessageReceived(parsedMessage);
+                onMessageReceived(JSON.parse(message.body));
+            });
+
+            stompClient.subscribe("/topic/read", (message) => {
+                onReadReceived(JSON.parse(message.body));
             });
         },
     });
@@ -40,3 +41,13 @@ export const sendMessageWS = (message) => {
         });
     }
 };
+
+export const sendReadWS = (senderId, receiverId) => {
+    if (stompClient && stompClient.connected) {
+        stompClient.publish({
+            destination: "/app/read",
+            body: JSON.stringify({ senderId, receiverId }),
+        });
+    }
+};
+
