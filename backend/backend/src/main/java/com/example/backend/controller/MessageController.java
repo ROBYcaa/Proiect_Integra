@@ -1,6 +1,7 @@
 package com.example.backend.controller;
 
 import com.example.backend.dto.ConversationDTO;
+import com.example.backend.dto.NotificationsDTO;
 import com.example.backend.dto.ReadReceiptDTO;
 import com.example.backend.model.Message;
 import com.example.backend.service.MessageService;
@@ -45,5 +46,9 @@ public class MessageController {
                 dto.senderId(),
                 dto.receiverId()
         );
+    }
+    @GetMapping("/{userId}")
+    public List<NotificationsDTO> getNotifications(@PathVariable String userId) {
+        return messageService.getNotifications(userId);
     }
 }

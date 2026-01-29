@@ -1,6 +1,7 @@
 package com.example.backend.service;
 
 import com.example.backend.dto.ConversationDTO;
+import com.example.backend.dto.NotificationsDTO;
 import com.example.backend.dto.ReadReceiptDTO;
 import com.example.backend.model.Message;
 import com.example.backend.repository.MessageRepository;
@@ -12,6 +13,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.*;
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 @Service
 public class MessageService {
@@ -108,4 +110,47 @@ public class MessageService {
 
         messagingTemplate.convertAndSend("/topic/read", dto);
     }
+
+    public List<NotificationsDTO> getNotifications(String currentUserId) {
+
+        List<Message> unreadMessages =
+                messageRepository.findByReceiverIdAndReadFalse(currentUserId);
+
+        Map<String, List<Message>> grouped =
+                unreadMessages.stream()
+                        .collect(Collectors.groupingBy(Message::getSenderId));
+
+        List<NotificationsDTO> result = new ArrayList<>();
+
+        for (Map.Entry<String, List<Message>> entry : grouped.entrySet()) {
+
+            String senderId = entry.getKey();
+            List<Message> msgs = entry.getValue();
+
+            Message lastMessage =
+                    msgs.stream()
+                            .max(Comparator.comparing(Message::getTimestamp))
+                            .orElse(null);
+
+            Optional<UserDetail> userDetail =
+                    userDetailRepository.findByUserId(senderId);
+
+            String fullName =
+                    userDetail
+                            .map(u -> u.getFirstName() + " " + u.getLastName())
+                            .orElse("Unknown User");
+
+            result.add(
+                    new NotificationsDTO(
+                            senderId,
+                            fullName,
+                            lastMessage != null ? lastMessage.getText() : "",
+                            msgs.size()
+                    )
+            );
+        }
+
+        return result;
+    }
+
 }

@@ -15,4 +15,5 @@ public interface MessageRepository extends MongoRepository<Message, String> {
             String senderId,
             String receiverId
     );
+    List<Message> findByReceiverIdAndReadFalse(String receiverId);
 }

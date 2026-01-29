@@ -84,3 +84,7 @@ export const getChatHistory = async (userId1, userId2) => {
 export const markMessagesAsRead = async (senderId, receiverId) => {
     await axiosInstance.post("/messages/read", { senderId, receiverId });
 };
+export const getNotifications = async (userId) => {
+    const { data } = await axiosInstance.get(`/messages/${userId}`);
+    return data;
+};
