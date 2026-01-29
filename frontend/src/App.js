@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./components/Login";
 import Dashboard from "./components/dashboard/Dashboard";
 import {useEffect, useState} from "react";
+import NavBar from "./components/NavBar";
 import PrescriptionForm from "./components/prescriptionform/PrescriptionForm";
 import Treatments from "./components/treatments/Treatments";
 import Export from "./components/export/Export";
@@ -38,6 +39,7 @@ function App() {
 
     return (
         <BrowserRouter>
+            <NavBar user={user} onLogout={handleLogout} />
             <Routes>
                 <Route path="/" element={<Login setUser={setUser} />} />
                 <Route path="/login" element={<Login setUser={setUser}/>} />
