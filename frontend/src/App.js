@@ -8,7 +8,6 @@ import Treatments from "./components/treatments/Treatments";
 import Export from "./components/export/Export";
 import Chat from "./components/chat/Chat";
 
-
 function App() {
     const [user, setUser] = useState({
         loggedIn: false,
@@ -42,6 +41,7 @@ function App() {
         <BrowserRouter>
             <NavBar user={user} onLogout={handleLogout} />
             <Routes>
+                <Route path="/" element={<Login setUser={setUser} />} />
                 <Route path="/login" element={<Login setUser={setUser}/>} />
                 <Route path="/dashboard" element={<Dashboard/>} />
                 <Route path="/prescribe" element={<PrescriptionForm />} />

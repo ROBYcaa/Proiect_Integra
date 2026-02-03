@@ -1,5 +1,5 @@
 import React, { useEffect, useState  } from "react";
-import { getPatients } from "../../api/api";
+import { getOnlyPatients } from "../../api/api";
 import "./Dashboard.css";
 import { useNavigate } from "react-router-dom";
 import { getTreatments } from "../../api/api";
@@ -69,7 +69,7 @@ function Dashboard() {
     useEffect(() => {
         const fetchPatients = async () => {
             try {
-                const data = await getPatients();
+                const data = await getOnlyPatients();
                 console.log("Pacienti:", data);  //  vezi aici dacă există id
                 setPatients(data);
             } catch (err) {

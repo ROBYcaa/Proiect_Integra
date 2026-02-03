@@ -88,4 +88,9 @@ public class DoctorController {
         return ResponseEntity.ok(details);
     }
 
+    @GetMapping("/patients-only")
+    public ResponseEntity<List<UserDetail>> getOnlyPatients() {
+        return ResponseEntity.ok(doctorService.getOnlyPatientDetails());
+    }
+
 }
