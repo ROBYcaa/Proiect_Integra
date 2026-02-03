@@ -1,46 +1,52 @@
 import React, { useEffect, useState } from 'react';
-import {View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity} from 'react-native';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
-import {exportTreatmentsPdf, getPatientTreatments, getTreatmentProgress} from '../api/api';
-import * as Sharing from "expo-sharing";
+import { exportTreatmentsPdf, getPatientTreatments, getTreatmentProgress } from '../api/api';
+import * as Sharing from 'expo-sharing';
+import * as FileSystem from 'expo-file-system';
+import { useNavigation } from '@react-navigation/native';
 
 export default function PatientTreatmentsScreen() {
+    const navigation = useNavigation();
     const [treatments, setTreatments] = useState([]);
     const [treatmentProgress, setTreatmentProgress] = useState({});
     const [loading, setLoading] = useState(true);
 
+    const loadProgressForTreatments = async (treatmentsData) => {
+        const progressPromises = treatmentsData.map(async (treatment) => {
+            try {
+                const progressResponse = await getTreatmentProgress(treatment.id);
+                return {
+                    id: treatment.id,
+                    progress: progressResponse.data.progressPercentage
+                };
+            } catch {
+                return { id: treatment.id, progress: 0 };
+            }
+        });
+
+        const progressResults = await Promise.all(progressPromises);
+
+        const progressMap = {};
+        progressResults.forEach(r => {
+            progressMap[r.id] = r.progress;
+        });
+
+        setTreatmentProgress(progressMap);
+    };
+
     const loadTreatments = async () => {
         try {
             const userId = await AsyncStorage.getItem('currentUserId');
+            if (!userId) return;
 
-            if (userId) {
-                const response = await getPatientTreatments(userId);
-                const treatmentsData = response.data;
-                setTreatments(treatmentsData);
+            const response = await getPatientTreatments(userId);
+            const treatmentsData = response.data;
 
-                const progressPromises = treatmentsData.map(async (treatment) => {
-                    try {
-                        const progressResponse = await getTreatmentProgress(treatment.id);
-                        return {
-                            id: treatment.id,
-                            progress: progressResponse.data.progressPercentage
-                        };
-                    } catch (error) {
-                        console.error(`Error loading progress for ${treatment.id}:`, error);
-                        return { id: treatment.id, progress: 0 };
-                    }
-                });
+            setTreatments(treatmentsData);
+            await loadProgressForTreatments(treatmentsData);
 
-                const progressResults = await Promise.all(progressPromises);
-
-                const progressMap = {};
-                progressResults.forEach((result) => {
-                    progressMap[result.id] = result.progress;
-                });
-
-                setTreatmentProgress(progressMap);
-            }
         } catch (error) {
             console.error('Error loading treatments:', error);
         } finally {
@@ -50,13 +56,11 @@ export default function PatientTreatmentsScreen() {
 
     const handleExportPdf = async () => {
         try {
-            const patientId = await AsyncStorage.getItem("currentUserId");
+            const patientId = await AsyncStorage.getItem('currentUserId');
             if (treatments.length === 0) return;
 
             const exportDto = {
                 patientId,
-                startDate: startDate.toISOString(),
-                endDate: endDate.toISOString(),
                 treatmentIds: treatments.map((t) => t.id),
             };
 
@@ -84,8 +88,9 @@ export default function PatientTreatmentsScreen() {
     };
 
     useEffect(() => {
-        loadTreatments();
-    }, []);
+        const unsubscribe = navigation.addListener('focus', loadTreatments);
+        return unsubscribe;
+    }, [navigation]);
 
     const getProgressColor = (percentage) => {
         if (percentage >= 80) return '#5cb85c';
@@ -146,8 +151,7 @@ export default function PatientTreatmentsScreen() {
                     <Text style={styles.emptyText}>No treatments found</Text>
                 }
             />
-            <TouchableOpacity style={styles.floatingButton}
-                              onPress={handleExportPdf}/>
+            <TouchableOpacity style={styles.floatingButton} onPress={handleExportPdf}/>
         </View>
     );
 }
