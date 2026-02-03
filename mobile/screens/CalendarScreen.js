@@ -84,6 +84,21 @@ export default function CalendarScreen() {
     const handleConfirmDose = async () => {
         if (!selectedTreatment) return;
 
+        const selectedDateObj = new Date(selectedDate);
+        selectedDateObj.setHours(0,0,0,0);
+
+        const intakesToday = (selectedTreatment.treatmentIntakes || []).filter(intake => {
+            const intakeDate = new Date(intake.date);
+            intakeDate.setHours(0,0,0,0);
+            return intakeDate.getTime() === selectedDateObj.getTime();
+        });
+
+        if (intakesToday.length >= selectedTreatment.timesPerDay) {
+            alert("Ati luat deja toate dozele pentru astazi!");
+            setModalVisible(false);
+            return;
+        }
+
         try {
             const userId = await AsyncStorage.getItem('currentUserId');
             if (!userId) return;
@@ -92,23 +107,20 @@ export default function CalendarScreen() {
                 treatmentId: selectedTreatment.id,
                 patientId: userId,
                 date: selectedTime,
-                doseIndex: 0,
+                doseIndex: intakesToday.length,
             };
 
             await markTreatmentIntake(intakeData);
-
             setModalVisible(false);
 
-            const response = await getPatientTreatmentsByDate(
-                userId,
-                selectedDate
-            );
+            const response = await getPatientTreatmentsByDate(userId, selectedDate);
             setTreatments(response.data);
 
         } catch (error) {
             console.log('Error marking dose:', error);
         }
     };
+
 
     const renderRightActions = (item) => {
         return (
