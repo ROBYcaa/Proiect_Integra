@@ -48,7 +48,7 @@ function Dashboard() {
 
 
     const handlePrescribe = (id) => {
-        navigate(`/treatments?patientId=${id}`);
+        navigate(`/prescribe?patientId=${id}`);
     };
 
     useEffect(() => {
