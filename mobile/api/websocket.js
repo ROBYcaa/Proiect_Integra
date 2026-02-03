@@ -3,7 +3,7 @@ import SockJS from "sockjs-client";
 
 let stompClient = null;
 
-const SOCKET_URL = "http://192.168.1.129:8080/chat";
+const SOCKET_URL = "http://10.3.0.179:8080/chat";
 
 export const connectWebSocket = (onMessageReceived, onReadReceived) => {
     stompClient = new Client({

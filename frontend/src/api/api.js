@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://192.168.1.129:8080/api";
+const API_URL = "http://10.3.0.179:8080/api";
 
 const getToken = () => localStorage.getItem("token");
 
@@ -88,3 +88,9 @@ export const getNotifications = async (userId) => {
     const { data } = await axiosInstance.get(`/messages/${userId}`);
     return data;
 };
+export const getOnlyPatients = async () => {
+    const { data } = await axiosInstance.get("/doctor/patients-only");
+    return data;
+};
+
+
